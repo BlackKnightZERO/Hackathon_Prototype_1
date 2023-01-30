@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from '../store'
 
-import Home from '../pages/Home.vue'
+import Dashboard from '../pages/Dashboard.vue'
 import About from '../pages/About.vue'
 import Login from '../pages/Login.vue'
 
@@ -19,9 +19,9 @@ const routes = [
         meta : { auth : false }
     },
     { 
-        path: '/',
-        name: 'home',
-        component: Home,
+        path: '/dashboard',
+        name: 'dashboard',
+        component: Dashboard,
         meta : { auth : true }
     },
     { 
@@ -37,13 +37,11 @@ const router = createRouter({
     routes
 })
 
-console.log(store.getters.GET_IS_AUTHENTICATED)
-
 router.beforeEach((to, from, next) => {
     if( to.meta.auth && !store.getters.GET_IS_AUTHENTICATED ) {
         next({ name: 'login' })
     } else if( !to.meta.auth && store.getters.GET_IS_AUTHENTICATED ) {
-        next({ name: 'home' })
+        next({ name: 'dashboard' })
     } else {
         next()
     }

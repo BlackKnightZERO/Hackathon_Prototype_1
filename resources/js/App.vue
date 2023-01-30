@@ -24,6 +24,7 @@
                             v-for="(item, index) in menuItems"
                             :key="index"
                             :value="index"
+                            @click="logout"
                         >
                         <v-list-item-title>{{ item.title }}</v-list-item-title>
                         </v-list-item>
@@ -47,6 +48,13 @@
             </v-list>
             </v-navigation-drawer>
             <v-main style="min-height: 95vh;">
+                <v-alert 
+                    closable 
+                    class="text-center" 
+                    density="compact" 
+                    :type="$store.state.alert.type" 
+                    :text="$store.state.alert.text" 
+                    v-show="$store.state.alert.value"></v-alert>
             <v-container>
                 <router-view></router-view>
             </v-container>
@@ -56,44 +64,63 @@
             color="#FF9100" 
             absolute
             v-if="$store.state.isAutheticated"
-        >Footer</v-footer>
+        >Footer<button @click="logout">logout</button> </v-footer>
     </v-app>
 </template>
 
-<script>
-export default {
-  data() {
-    return { 
-        drawer: false,
-        group: null,
-        navItems: [
-            {
-                id: 1,
-                title: 'Menu 1',
-                value: 'menu_1',
-                path: '/'
-            },
-            {
-                id: 2,
-                title: 'Menu 2',
-                value: 'menu_2',
-                path: '/about'
-            }
-        ],
-        menuItems: [
-            { title: 'Profile' },
-            { title: 'Logout' },
-        ],
-    }
-  },
-  mounted() {
-    console.log(this.$store.state.isAutheticated)
-  },
-  watch: {
-    group () {
-      this.drawer = false
-    },
-  },
-}
+<script setup>
+import { ref, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import store from './store/index.js'
 
+    const router = useRouter()
+    const drawer = ref(false)
+    const group = ref(null)
+
+    const navItems = ref([
+                {
+                    id: 1,
+                    title: 'Menu 1',
+                    value: 'menu_1',
+                    path: '/dashboard'
+                },
+                {
+                    id: 2,
+                    title: 'Menu 2',
+                    value: 'menu_2',
+                    path: '/about'
+                }
+            ])
+
+    const menuItems = ref([
+                { title: 'Profile' },
+                { title: 'Logout' },
+            ])
+
+    watch(group, (newGroup, oldGroup) => {
+        drawer.value = false
+    })
+
+    onMounted(async () => {
+        axios({
+            method: 'GET',
+            url: '/sanctum/csrf-cookie',
+        }).then(response => {
+            // console.log(response)
+        });
+    })
+
+    const logout = async () => {
+            axios({
+                method: 'POST',
+                url: '/api/logout',
+                data: {}
+            }).then(res => {
+                store.dispatch('RESET_USER')
+                router.push('/')
+                console.log(res)
+            }).catch(err => {
+                console.log(err)
+            })
+    }
 </script>

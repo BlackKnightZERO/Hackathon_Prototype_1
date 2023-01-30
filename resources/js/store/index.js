@@ -1,49 +1,70 @@
 import { createStore } from 'vuex'
+import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
     state () {
       return {
-        counter: 1000,
-        user:{
+        user: {
             "src": "https://cdn.vuetifyjs.com/images/john.jpg",
             "alt": "John"
         },
-        isAutheticated: false
+        isAutheticated: false,
+        alert: {
+            value: false,
+            type: 'success',
+            text: '',
+        }
       }
     },
     getters:{
-        GET_COUNTER(state){
-            return state.counter;
-        },
         GET_USER(state){
             return state.user;
         },
         GET_IS_AUTHENTICATED(state){
             return state.isAutheticated;
         },
+        GET_ALERT(state){
+            return state.alert;
+        },
     },
     mutations:{
-        MUTATE_COUNTER(state, payload) {
-            state.counter += payload;
-        },
         MUTATE_USER(state, payload) {
             state.user = payload
         },
         MUTATE_IS_AUTHENTICATED(state, payload) {
             state.isAutheticated = payload
         },
+        MUTATE_ALERT(state, payload) {
+            state.alert = payload
+        },
     },
     actions:{
-        UPDATE_COUNTER({ commit }, payload){
-            commit('MUTATE_COUNTER', payload);
-        },
         UPDATE_USER({ commit }, payload) {
             commit('MUTATE_USER', payload);
         },
+        RESET_USER({ commit }) {
+            commit('MUTATE_USER', {
+                "src": "https://cdn.vuetifyjs.com/images/john.jpg",
+                "alt": "John"
+            });
+            commit('MUTATE_IS_AUTHENTICATED', false)
+        },
         UPDATE_IS_AUTHENTICATED({ commit }, payload) {
             commit('MUTATE_IS_AUTHENTICATED', payload);
-        }
-    }
+        },
+        UPDATE_ALERT({ commit }, payload) {
+            commit('MUTATE_ALERT', payload);
+            setTimeout(() => {
+                commit('MUTATE_ALERT', {
+                    value: false,
+                    type: 'success',
+                    text: '',
+                })
+            }, 2700)
+        },
+    },
+
+    plugins: [createPersistedState()]
 })
 
 export default store
