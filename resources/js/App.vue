@@ -97,10 +97,6 @@ import store from './store/index.js'
                 { title: 'Logout' },
             ])
 
-    watch(group, (newGroup, oldGroup) => {
-        drawer.value = false
-    })
-
     onMounted(async () => {
         axios({
             method: 'GET',
@@ -111,10 +107,10 @@ import store from './store/index.js'
     })
 
     const logout = async () => {
-            axios({
+        axios({
                 method: 'POST',
                 url: '/api/logout',
-                data: {}
+                data: {},
             }).then(res => {
                 store.dispatch('RESET_USER')
                 router.push('/')
@@ -123,4 +119,8 @@ import store from './store/index.js'
                 console.log(err)
             })
     }
+
+    watch(group, (newGroup, oldGroup) => {
+        drawer.value = false
+    })
 </script>
