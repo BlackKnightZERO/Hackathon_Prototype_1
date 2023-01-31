@@ -64,7 +64,7 @@
             color="#FF9100" 
             absolute
             v-if="$store.state.isAutheticated"
-        >Footer<button @click="logout">logout</button> </v-footer>
+        >Footer | <button @click="exit">EXIT</button></v-footer>
     </v-app>
 </template>
 
@@ -93,16 +93,22 @@ import store from './store/index.js'
             ])
 
     const menuItems = ref([
-                { title: 'Profile' },
-                { title: 'Logout' },
+                { 
+                    id: 1,
+                    title: 'Profile' 
+                },
+                { 
+                    id: 2,
+                    title: 'Logout' 
+                },
             ])
 
     onMounted(async () => {
         axios({
             method: 'GET',
             url: '/sanctum/csrf-cookie',
-        }).then(response => {
-            // console.log(response)
+        }).then(res => {
+            // console.log(res)
         });
     })
 
@@ -114,10 +120,14 @@ import store from './store/index.js'
             }).then(res => {
                 store.dispatch('RESET_USER')
                 router.push('/')
-                console.log(res)
             }).catch(err => {
                 console.log(err)
             })
+    }
+
+    const exit = async () => {
+        store.dispatch('RESET_USER')
+        router.push('/')
     }
 
     watch(group, (newGroup, oldGroup) => {

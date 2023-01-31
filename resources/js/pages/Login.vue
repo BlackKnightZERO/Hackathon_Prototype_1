@@ -58,7 +58,7 @@ import store from '../store/index.js'
                type: 'success',
                text: 'Login Successful',
             })
-            store.dispatch('UPDATE_USER', res.data)
+            store.dispatch('UPDATE_USER', res.data.data)
             store.dispatch('UPDATE_IS_AUTHENTICATED', true)
             router.push('/dashboard')
         }).catch(error => {
