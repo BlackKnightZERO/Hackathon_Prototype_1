@@ -4,10 +4,9 @@ import createPersistedState from "vuex-persistedstate";
 const store = createStore({
     state () {
       return {
-        user: {
-            "src": "https://cdn.vuetifyjs.com/images/john.jpg",
-            "alt": "John"
-        },
+        user: {},
+        role: 'User',
+        permission: {},
         isAutheticated: false,
         alert: {
             value: false,
@@ -17,19 +16,31 @@ const store = createStore({
       }
     },
     getters:{
-        GET_USER(state){
-            return state.user;
+        GET_USER(state) {
+            return state.user
         },
-        GET_IS_AUTHENTICATED(state){
-            return state.isAutheticated;
+        GET_ROLE(state) {
+            return state.role
         },
-        GET_ALERT(state){
+        GET_PERMISSION(state) {
+            return state.permission
+        },
+        GET_IS_AUTHENTICATED(state) {
+            return state.isAutheticated
+        },
+        GET_ALERT(state) {
             return state.alert;
         },
     },
     mutations:{
         MUTATE_USER(state, payload) {
             state.user = payload
+        },
+        MUTATE_ROLE(state, payload) {
+            state.role = payload
+        },
+        MUTATE_PERMISSION(state, payload) {
+            state.permission = payload
         },
         MUTATE_IS_AUTHENTICATED(state, payload) {
             state.isAutheticated = payload
@@ -40,20 +51,25 @@ const store = createStore({
     },
     actions:{
         UPDATE_USER({ commit }, payload) {
-            commit('MUTATE_USER', payload);
+            commit('MUTATE_USER', payload)
         },
         RESET_USER({ commit }) {
-            commit('MUTATE_USER', {
-                "src": "https://cdn.vuetifyjs.com/images/john.jpg",
-                "alt": "John"
-            });
+            commit('MUTATE_USER', {})
+            commit('MUTATE_ROLE', 'User')
+            commit('MUTATE_PERMISSION', {})
             commit('MUTATE_IS_AUTHENTICATED', false)
         },
+        UPDATE_ROLE({ commit }, payload) {
+            commit('MUTATE_ROLE', payload)
+        },
+        UPDATE_PERMISSION({ commit }, payload) {
+            commit('MUTATE_PERMISSION', payload)
+        },
         UPDATE_IS_AUTHENTICATED({ commit }, payload) {
-            commit('MUTATE_IS_AUTHENTICATED', payload);
+            commit('MUTATE_IS_AUTHENTICATED', payload)
         },
         UPDATE_ALERT({ commit }, payload) {
-            commit('MUTATE_ALERT', payload);
+            commit('MUTATE_ALERT', payload)
             setTimeout(() => {
                 commit('MUTATE_ALERT', {
                     value: false,

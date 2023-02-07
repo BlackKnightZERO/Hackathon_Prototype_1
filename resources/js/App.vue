@@ -2,17 +2,17 @@
     <v-app>
         <v-layout>
             <v-app-bar
-            color="#FF9100"
-            prominent
-            v-if="$store.state.isAutheticated"
+                color="#FF9100"
+                prominent
+                v-if="$store.state.isAutheticated"
             >
                 <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
                 <v-toolbar-title>My files</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-avatar>
                     <v-img
-                        :src="$store.state.user.src"
-                        :alt="$store.state.user.alt"
+                        :src="avatarGenerate"
+                        :alt="altGenerate"
                     ></v-img>
                 </v-avatar>
                 <v-menu>
@@ -64,17 +64,18 @@
             color="#FF9100" 
             absolute
             v-if="$store.state.isAutheticated"
-        >Footer | <button @click="exit">EXIT</button></v-footer>
+        >Footer | <button @click="reset">RESET</button></v-footer>
     </v-app>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import store from './store/index.js'
+import createNavMenu from './helper/navGenerate'
 
     const router = useRouter()
-    const drawer = ref(false)
+    const drawer = ref(true)
     const group = ref(null)
 
     const navItems = ref([
@@ -93,22 +94,16 @@ import store from './store/index.js'
             ])
 
     const menuItems = ref([
-                { 
-                    id: 1,
-                    title: 'Profile' 
-                },
-                { 
-                    id: 2,
-                    title: 'Logout' 
-                },
+                // { title: 'Profile' },
+                { title: 'Logout' },
             ])
 
     onMounted(async () => {
         axios({
             method: 'GET',
             url: '/sanctum/csrf-cookie',
-        }).then(res => {
-            // console.log(res)
+        }).then(response => {
+            // console.log(response)
         });
     })
 
@@ -125,12 +120,26 @@ import store from './store/index.js'
             })
     }
 
-    const exit = async () => {
+    const reset = async() => {
         store.dispatch('RESET_USER')
         router.push('/')
     }
 
     watch(group, (newGroup, oldGroup) => {
-        drawer.value = false
+        drawer.value = true
     })
+
+    const avatarGenerate = computed(() => {
+        return `https://ui-avatars.com/api/?name=${store.state.user.first_name}+${store.state.user.last_name}`
+    })
+
+    const altGenerate = computed(() => {
+        return `${store.state.user.first_name} ${store.state.user.last_name}`
+    })
+
+    watch(() => store.state.permission, (newPermission, oldPermission) => {
+        if(Object.keys(newPermission).length !== 0) {
+            navItems.value = createNavMenu(newPermission)
+        }
+    }, { immediate : true })
 </script>

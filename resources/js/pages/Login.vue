@@ -23,8 +23,8 @@ import { ref } from 'vue'
 import store from '../store/index.js'
 
    const router = useRouter()
-   const emailRef = ref('')
-   const passwordRef = ref('')
+   const emailRef = ref('admin@gmail.com')
+   const passwordRef = ref('123123')
    const loginForm = ref(null)
 
    const emailRules = ref([
@@ -58,7 +58,10 @@ import store from '../store/index.js'
                type: 'success',
                text: 'Login Successful',
             })
-            store.dispatch('UPDATE_USER', res.data.data)
+            store.dispatch('UPDATE_ROLE', res.data.data.user.role.title)
+            store.dispatch('UPDATE_PERMISSION', res.data.data.user.role.permissions)
+            delete res.data.data.user.role
+            store.dispatch('UPDATE_USER', res.data.data.user)
             store.dispatch('UPDATE_IS_AUTHENTICATED', true)
             router.push('/dashboard')
         }).catch(error => {

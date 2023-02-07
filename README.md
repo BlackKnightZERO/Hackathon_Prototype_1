@@ -1,3 +1,39 @@
+## Installation Guide
+
+###### prerequisites:
+    * PHP 8.1^
+    * MySQL (xampp or wampp)
+    * NodeJS 18.9^
+    * Composer 2^
+
+###### Steps:
+    1. Place the project at any desired location, preferably C:/xampp/htdocs if using xampp
+    2. From project directory, create a new .env file and copy contents from env.example to .env
+    3. Create a new database on phpmyadmin
+    4. Configure APP_URL=localhost:8000 on .env file
+    5. Configure DB_DATABASE, DB_USERNAME, DB_PASSWORD on .env file according to your phpmyadmin configuration
+    6. No string quotation marks are required. ex: DB_DATABASE=your_db_name, DB_USERNAME=root
+    7. Start a new terminal from project directory & run > composer i
+    8. From a terminal from project directory run > php artisan key:generate
+    9. From a terminal from project directory run > php artisan migrate
+    10. From a terminal from project directory run > php artisan db:seed
+    11. From a terminal from project directory run > npm i
+
+###### Running the project:
+    * From a terminal from project directory run > php artisan serve
+    * From another terminal from project directory run > npm run dev
+    * dev server : http://localhost:8000/
+
+###### Syncing Dependencies:
+    * pull from master
+    * composer
+        - run > composer i
+        - run > composer dump-autoload
+        - restart dev server, run > php artisan serve
+    * npm
+        - run > npm i
+        - recompile js bundle, run > npm run dev
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

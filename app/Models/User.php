@@ -7,10 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Cviebrock\EloquentSluggable\Sluggable;
+use App\Models\Role;
+
+use App\Models\UserDetail;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Sluggable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,9 +26,9 @@ class User extends Authenticatable
         'last_name',
         'email',
         'username',
-        'phone',
         'password',
         'is_admin',
+        'slug'
     ];
 
     /**
@@ -45,4 +49,28 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function scopeAdmin($query) {
+        return $query->where('is_admin', 1);
+    }
+
+    public function userDetail() {
+        return $this->hasOne(UserDetail::class);
+    }
+
+    public function sluggable(): array {
+        return [
+            'slug' => [
+                'source' => 'first_name'
+            ]
+        ];
+    }
+
+    public function role() {
+        return $this->belongsTo(Role::class);
+    }
+
+    // public function hasPermission($permission):bool {
+    //     return $this->role->permissions->where('slug', $permission)->first() ? true : false;
+    // }
 }

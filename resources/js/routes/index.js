@@ -30,6 +30,48 @@ const routes = [
         component: About,
         meta : { auth : true }
     },
+    { 
+        path: '/profile',
+        name: 'profile',
+        component: About,
+        meta : { auth : true }
+    },
+    { 
+        path: '/user',
+        name: 'user',
+        component: About,
+        meta : { auth : true }
+    },
+    { 
+        path: '/role',
+        name: 'role',
+        component: About,
+        meta : { auth : true }
+    },
+    { 
+        path: '/permission',
+        name: 'permission',
+        component: About,
+        meta : { auth : true }
+    },
+    { 
+        path: '/role-permission',
+        name: 'role-permission',
+        component: About,
+        meta : { auth : true }
+    },
+    { 
+        path: '/coop-term',
+        name: 'coop-term',
+        component: About,
+        meta : { auth : true }
+    },
+    { 
+        path: '/ministry',
+        name: 'ministry',
+        component: About,
+        meta : { auth : true }
+    },
 ]
 
 const router = createRouter({
