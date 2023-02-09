@@ -1,16 +1,16 @@
 <template>
-    <h2>Ministry</h2>
-    <div>
-      <v-text-field
-        density="compact"
-        variant="underlined"
-        label="Search.."
-        append-inner-icon="mdi-magnify"
-        single-line
-        hide-details
-        v-model="searchValue"
-        style="width:30%; margin: 10px 0px;"
-      ></v-text-field>
+    <div v-if="canPerform.includes('Index')">
+        <h2>{{ moduleName }}</h2>
+        <v-text-field
+            density="compact"
+            variant="underlined"
+            label="Search.."
+            append-inner-icon="mdi-magnify"
+            single-line
+            hide-details
+            v-model="searchValue"
+            style="width:30%; margin: 10px 0px;"
+        ></v-text-field>
 
         <EasyDataTable
             v-model:server-options="serverOptions"
@@ -26,6 +26,7 @@
                         class="ma-2"
                         color="success"
                         size="x-small"
+                        v-if="canPerform.includes('Update')"
                     >
                         Edit
                         <v-icon
@@ -33,11 +34,11 @@
                         icon="mdi-pencil"
                         ></v-icon>
                     </v-btn>
-
                     <v-btn
                         class="ma-2"
                         color="error"
                         size="x-small"
+                        v-if="canPerform.includes('Delete')"
                     >
                         Delete
                         <v-icon
@@ -49,15 +50,22 @@
             </template>
         </EasyDataTable>
     </div>
+    <div v-else>
+        <h2>Your don't have permission..</h2>
+    </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue"
+import store from '../store/index.js'
+import modulePermission from '../helper/modulePermission.js'
 
+    const moduleName = 'Ministry'
     const apiData = ref([])
+    const canPerform = modulePermission(moduleName)
 
     const loading = ref(false)
-    const serverItemsLength = ref(0);
+    const serverItemsLength = ref(0)
     const rowItems = [20]
 
     const serverOptions = ref({
@@ -75,7 +83,7 @@ import { ref, onMounted, watch } from "vue"
         { text: "Operation", value: "operation" },
     ]
 
-    const searchValue = ref('');
+    const searchValue = ref('')
 
     const fetchData = async () => {
         loading.value = true
@@ -83,7 +91,7 @@ import { ref, onMounted, watch } from "vue"
             method: 'GET',
             url: '/api/ministries?page='+serverOptions.value.page+'&search='+searchValue.value,
             data: {}
-        }).then(res => { 
+        }).then(res => {
             apiData.value = res.data.data
             serverItemsLength.value = res.data.meta.total;
         }).catch(err => {
@@ -93,8 +101,14 @@ import { ref, onMounted, watch } from "vue"
     }
 
     onMounted(() => {
+        setPermissions()
         fetchData()
     })
+
+    const setPermissions = () => {
+        const mp = store.state.permission.filter(f => f.module.title === 'Ministry')
+        modulePermission.value = mp.map(m => m.title)
+    }
 
     watch(serverOptions, (newValue, oldValue) => {
         fetchData()

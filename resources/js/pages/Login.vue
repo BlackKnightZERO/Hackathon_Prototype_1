@@ -8,7 +8,7 @@
                <v-text-field label="Password" type="password" v-model="passwordRef" :rules="passwordRules" />
             </v-card-text>
             <v-card-actions class="d-flex align-center flex-column">
-               <v-btn type="submit" border color="#FF9100">
+               <v-btn type="submit" :loading="loading" border color="#FF9100">
                   Login
                </v-btn>
             </v-card-actions>
@@ -23,6 +23,7 @@ import { ref } from 'vue'
 import store from '../store/index.js'
 
    const router = useRouter()
+   const loading = ref(false)
    const emailRef = ref('admin@gmail.com')
    const passwordRef = ref('123123')
    const loginForm = ref(null)
@@ -40,7 +41,9 @@ import store from '../store/index.js'
    const submitForm = async () => {
       const { valid } = await loginForm.value.validate()
       if( valid ) {
+         loading.value = true
          await login()
+         loading.value = false
       } 
    }
 

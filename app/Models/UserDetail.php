@@ -24,6 +24,11 @@ class UserDetail extends Model
         'resume_path',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function user(){
         return $this->belongsTo(User::class);
     }

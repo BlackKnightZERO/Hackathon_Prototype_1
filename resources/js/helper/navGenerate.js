@@ -2,7 +2,7 @@ const createNavMenu = (data) => {
     let temp = []
     let newNavItems = []
     data.map((m) => temp.push(m.module.title))
-    temp = [...new Set(temp)];
+    temp = [...new Set(temp)]
     temp.map((m,index) => {
         newNavItems.push({
                 id: index,

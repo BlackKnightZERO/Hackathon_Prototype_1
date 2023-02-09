@@ -18,6 +18,11 @@ class Permission extends Model
         'slug',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function sluggable(): array {
         return [
             'slug' => [
