@@ -57,12 +57,13 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue"
-import store from '../store/index.js'
 import modulePermission from '../helper/modulePermission.js'
 
     const moduleName = 'Ministry'
+
     const apiData = ref([])
     const canPerform = modulePermission(moduleName)
+    const searchValue = ref('')
 
     const loading = ref(false)
     const serverItemsLength = ref(0)
@@ -83,39 +84,29 @@ import modulePermission from '../helper/modulePermission.js'
         { text: "Operation", value: "operation" },
     ]
 
-    const searchValue = ref('')
-
     const fetchData = async () => {
-        loading.value = true
-        await axios({
-            method: 'GET',
-            url: '/api/ministries?page='+serverOptions.value.page+'&search='+searchValue.value,
-            data: {}
-        }).then(res => {
-            apiData.value = res.data.data
-            serverItemsLength.value = res.data.meta.total;
-        }).catch(err => {
-            console.log(err)
-        })
-        loading.value = false
+        if(canPerform.includes('Index')) {
+            loading.value = true
+            await axios({
+                method: 'GET',
+                url: '/api/ministries?page='+serverOptions.value.page+'&search='+searchValue.value,
+                data: {}
+            }).then(res => {
+                apiData.value = res.data.data
+                serverItemsLength.value = res.data.meta.total;
+            }).catch(err => {
+                console.log(err)
+            })
+            loading.value = false
+        }
     }
 
     onMounted(() => {
-        setPermissions()
         fetchData()
     })
 
-    const setPermissions = () => {
-        const mp = store.state.permission.filter(f => f.module.title === 'Ministry')
-        modulePermission.value = mp.map(m => m.title)
-    }
-
-    watch(serverOptions, (newValue, oldValue) => {
+    watch([serverOptions, () => searchValue], ([newServerOptions, newSearchValue]) => {
         fetchData()
     }, { deep : true })
-
-    watch(searchValue, (newValue, oldValue) => {
-        fetchData()
-    }, { immediate : true })
 
 </script>
