@@ -212,4 +212,6 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'pagination' => env('APP_PAGINATION', 20),
+
 ];

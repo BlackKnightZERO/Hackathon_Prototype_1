@@ -4,6 +4,7 @@ import store from '../store'
 import Dashboard from '../pages/Dashboard.vue'
 import About from '../pages/About.vue'
 import Login from '../pages/Login.vue'
+import Ministry from '../pages/Ministry.vue'
 
 const routes = [
     {
@@ -69,7 +70,7 @@ const routes = [
     { 
         path: '/ministry',
         name: 'ministry',
-        component: About,
+        component: Ministry,
         meta : { auth : true }
     },
 ]
