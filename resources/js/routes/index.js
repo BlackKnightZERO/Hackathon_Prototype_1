@@ -91,11 +91,14 @@ const router = createRouter({
 const capitalize = ([first,...rest]) => first.toUpperCase() + rest.join('').toLowerCase();
 
 router.beforeEach((to, from, next) => {
-    // console.log(modulePermission(capitalize(to.name)))
     if( to.meta.auth && !store.getters.GET_IS_AUTHENTICATED ) {
         next({ name: 'login' })
-    } else if( !to.meta.auth && store.getters.GET_IS_AUTHENTICATED ) {
+    } else if( !to.meta.auth && store.getters.GET_IS_AUTHENTICATED && to.path !== '/forbidden' ) {
         next({ name: 'dashboard' })
+    } else if (store.getters.GET_IS_AUTHENTICATED && to.meta.auth && !modulePermission(capitalize(to.name)).includes('INDEX')) {
+        next({ name: 'forbidden' })
+    } else if(store.getters.GET_IS_AUTHENTICATED && to.meta.auth && modulePermission(capitalize(to.name)).includes('INDEX') ) {
+        next()
     } else {
         next()
     }

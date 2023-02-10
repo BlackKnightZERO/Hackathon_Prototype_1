@@ -1,8 +1,5 @@
 <template>
-    <div v-if="!canPerform.includes('INDEX')">
-        <Page403 />
-    </div>
-    <div v-else>
+    <div v-if="canPerform.includes('INDEX')">
         <h2>{{ moduleName }}</h2>
         <v-text-field
             density="compact"
@@ -58,7 +55,6 @@
 <script setup>
 import { ref, onMounted, watch } from "vue"
 import modulePermission from '../helper/modulePermission.js'
-import Page403 from './Page403.vue'
 
     const moduleName = 'Ministry'
 
