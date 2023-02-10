@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from '../store'
+import modulePermission from "../helper/modulePermission.js";
 
 import Dashboard from '../pages/Dashboard.vue'
 import About from '../pages/About.vue'
 import Login from '../pages/Login.vue'
 import Ministry from '../pages/Ministry.vue'
+import Page403 from '../pages/Page403.vue'
 
 const routes = [
     {
@@ -73,6 +75,12 @@ const routes = [
         component: Ministry,
         meta : { auth : true }
     },
+    { 
+        path: '/forbidden',
+        name: 'forbidden',
+        component: Page403,
+        meta : { auth : false }
+    },
 ]
 
 const router = createRouter({
@@ -80,7 +88,10 @@ const router = createRouter({
     routes
 })
 
+const capitalize = ([first,...rest]) => first.toUpperCase() + rest.join('').toLowerCase();
+
 router.beforeEach((to, from, next) => {
+    // console.log(modulePermission(capitalize(to.name)))
     if( to.meta.auth && !store.getters.GET_IS_AUTHENTICATED ) {
         next({ name: 'login' })
     } else if( !to.meta.auth && store.getters.GET_IS_AUTHENTICATED ) {
