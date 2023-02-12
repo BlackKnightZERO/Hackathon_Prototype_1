@@ -6,6 +6,8 @@ import Dashboard from '../pages/Dashboard.vue'
 import About from '../pages/About.vue'
 import Login from '../pages/Login.vue'
 import Ministry from '../pages/Ministry.vue'
+import RolePermission from '../pages/RolePermission.vue'
+
 import Page403 from '../pages/Page403.vue'
 
 const routes = [
@@ -60,7 +62,7 @@ const routes = [
     { 
         path: '/role-permission',
         name: 'role-permission',
-        component: About,
+        component: RolePermission,
         meta : { auth : true }
     },
     { 

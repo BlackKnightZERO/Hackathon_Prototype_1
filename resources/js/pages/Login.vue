@@ -67,13 +67,14 @@ import store from '../store/index.js'
             store.dispatch('UPDATE_USER', res.data.data.user)
             store.dispatch('UPDATE_IS_AUTHENTICATED', true)
             router.push('/dashboard')
-        }).catch(error => {
+        }).catch(err => {
+            const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Login Failed'
             store.dispatch('UPDATE_ALERT', {
                value: true,
                type: 'error',
-               text: 'Login Failed',
+               text: alertMsg,
             })
-            console.log(`error : ${error}`)
+            console.log(err)
         })
     }
 </script>

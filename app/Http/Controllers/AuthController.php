@@ -24,9 +24,6 @@ class AuthController extends Controller
         }
 
         $user = User::with('role.permissions.module')->where('email', $request->email)->first();
-        $permission = $user->role->permissions;
-        // $user = User::where('email', $request->email)->first();
-        // $permission = $user->role->permissions;
 
         return $this->success([
             'user'          => $user,
