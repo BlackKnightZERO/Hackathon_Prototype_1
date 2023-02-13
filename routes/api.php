@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MinistryController;
+use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 
 /*
@@ -25,5 +28,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 	Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::apiResource('/ministries', MinistryController::class);
+    Route::apiResource('/modules', ModuleController::class);
+    Route::apiResource('/roles', RoleController::class);
+    Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/role-permissions', RolePermissionController::class);
 });

@@ -3,20 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use App\Http\Resources\MinistryResource;
-use App\Models\Module;
+use App\Http\Resources\RoleResource;
+use App\Models\Role;
 
-class RolePermissionController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Module::with('permissions')->orderBy('id', 'DESC')->get();
-        // module model for all
+        return ($request->has('compact')) 
+                ? Role::query()->ExceptAdmin()->orderBy('id', 'DESC')->get()
+                : RoleResource::collection(
+                    Role::query()
+                    ->ExceptAdmin()
+                    ->orderBy('id', 'DESC')
+                    ->paginate(config('app.pagination')) );
     }
 
     /**

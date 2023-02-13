@@ -3,20 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use App\Http\Resources\MinistryResource;
-use App\Models\Module;
+use App\Http\Resources\PermissionResource;
+use App\Models\Permission;
 
-class RolePermissionController extends Controller
+class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Module::with('permissions')->orderBy('id', 'DESC')->get();
-        // module model for all
+        return ($request->has('compact')) 
+                ? Permission::query()->get()
+                : PermissionResource::collection(
+                    Permission::orderBy('id', 'DESC')
+                    ->paginate(config('app.pagination')) );
     }
 
     /**

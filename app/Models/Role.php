@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Role;
 use App\Models\User;
+use App\Enums\RoleEnum;
 
 class Role extends Model
 {
@@ -28,6 +29,10 @@ class Role extends Model
                 'source' => 'title'
             ]
         ];
+    }
+
+    public function scopeExceptAdmin($query) {
+        return $query->where('title', '!=', RoleEnum::ADMIN->value);
     }
 
     public function permissions() {

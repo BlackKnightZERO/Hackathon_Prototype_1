@@ -2,7 +2,7 @@
     <div v-if="canPerform.includes('INDEX')">
         <h2>{{ moduleName }}</h2>
         <v-select
-            :items="items"
+            :items="apiRolesData"
             label="Role"
             density="compact"
             style="width:30%; margin: 10px 0px;"
@@ -15,69 +15,24 @@
                         Module
                     </th>
                     <th class="text-left">
-                        Index
-                    </th>
-                    <th class="text-left">
-                        View
-                    </th>
-                    <th class="text-left">
-                        Create
-                    </th>
-                    <th class="text-left">
-                        Update
-                    </th>
-                    <th class="text-left">
-                        Delete
+                        Permissions
                     </th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Name</td>
+                <tr v-for="data in apiModuleData" :key="data.id">
+                    <td>{{ data.title }}</td>
                     <td>
-                        <v-checkbox
-                            v-model="ex4"
-                            label=""
-                            color="orange"
-                            value="orange"
-                            hide-details
-                        ></v-checkbox>
-                    </td>
-                    <td>
-                        <v-checkbox
-                            v-model="ex4"
-                            label=""
-                            color="orange"
-                            value="orange"
-                            hide-details
-                        ></v-checkbox>
-                    </td>
-                    <td>
-                        <v-checkbox
-                            v-model="ex4"
-                            label=""
-                            color="orange"
-                            value="orange"
-                            hide-details
-                        ></v-checkbox>
-                    </td>
-                    <td>
-                        <v-checkbox
-                            v-model="ex4"
-                            label=""
-                            color="orange"
-                            value="orange"
-                            hide-details
-                        ></v-checkbox>
-                    </td>
-                    <td>
-                        <v-checkbox
-                            v-model="ex4"
-                            label=""
-                            color="orange"
-                            value="orange"
-                            hide-details
-                        ></v-checkbox>
+                        <div v-for="_data in data.permissions" :key="_data.id">
+                            <v-checkbox
+                                v-model="ex4"
+                                :label="_data.title"
+                                color="orange"
+                                value="orange"
+                                hide-details
+                                density="compact"
+                            ></v-checkbox>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -91,20 +46,35 @@ import modulePermission from '../helper/modulePermission.js'
 
     const moduleName = 'Role-permission'
 
-    const apiData = ref([])
+    const apiRolesData = ref([])
+    const apiModuleData = ref([])
     const ex4 = ref("ki jani")
     const roleRef = ref('')
     const canPerform = modulePermission(moduleName)
 
     const items = ['User']
 
-    const fetchData = async () => {
+    const fetchRoleData = async () => {
         await axios({
             method: 'GET',
-            url: '/api/role-permissions',
+            url: '/api/roles?compact',
             data: {}
         }).then(res => {
-            apiData.value = res.data
+            console.log(res.data)
+            apiRolesData.value = res.data
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    const fetchModuleData = async () => {
+        await axios({
+            method: 'GET',
+            url: '/api/modules',
+            data: {}
+        }).then(res => {
+            console.log(res.data)
+            apiModuleData.value = res.data.data
         }).catch(err => {
             console.log(err)
         })
@@ -112,8 +82,15 @@ import modulePermission from '../helper/modulePermission.js'
 
     onMounted(() => {
         if(canPerform.includes('INDEX')) {
-            fetchData()
+            fetchRoleData()
+            fetchModuleData()
         }
     })
 
 </script>
+
+<style scoped>
+tbody tr:nth-of-type(odd) {
+   background-color: rgba(0, 0, 0, .03);
+ }
+</style>
