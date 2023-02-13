@@ -1,54 +1,87 @@
 <template>
     <div v-if="canPerform.includes('INDEX')">
         <h2>{{ moduleName }}</h2>
-        <v-container fluid>
-            <v-row>
-                <v-col
-                cols="12"
-                sm="6"
-                md="6"
-                >
-                <p class="text-subtitle-1">
-                Black text.
-                </p>
-                <v-checkbox
-                    v-model="ex4"
-                    label="orange"
-                    color="orange"
-                    value="orange"
-                    hide-details
-                ></v-checkbox>
-                <v-checkbox
-                    v-model="ex4"
-                    label="orange"
-                    color="orange"
-                    value="orange"
-                    hide-details
-                ></v-checkbox>
-                <v-checkbox
-                    v-model="ex4"
-                    label="orange"
-                    color="orange"
-                    value="orange"
-                    hide-details
-                ></v-checkbox>
-                <v-checkbox
-                    v-model="ex4"
-                    label="orange"
-                    color="orange"
-                    value="orange"
-                    hide-details
-                ></v-checkbox>
-                <v-checkbox
-                    v-model="ex4"
-                    label="orange"
-                    color="orange"
-                    value="orange"
-                    hide-details
-                ></v-checkbox>
-                </v-col>
-            </v-row>
-        </v-container>
+        <v-select
+            :items="items"
+            label="Role"
+            density="compact"
+            style="width:30%; margin: 10px 0px;"
+            v-model="roleRef"
+        ></v-select>
+        <v-table density="compact">
+            <thead>
+                <tr>
+                    <th class="text-left">
+                        Module
+                    </th>
+                    <th class="text-left">
+                        Index
+                    </th>
+                    <th class="text-left">
+                        View
+                    </th>
+                    <th class="text-left">
+                        Create
+                    </th>
+                    <th class="text-left">
+                        Update
+                    </th>
+                    <th class="text-left">
+                        Delete
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>
+                        <v-checkbox
+                            v-model="ex4"
+                            label=""
+                            color="orange"
+                            value="orange"
+                            hide-details
+                        ></v-checkbox>
+                    </td>
+                    <td>
+                        <v-checkbox
+                            v-model="ex4"
+                            label=""
+                            color="orange"
+                            value="orange"
+                            hide-details
+                        ></v-checkbox>
+                    </td>
+                    <td>
+                        <v-checkbox
+                            v-model="ex4"
+                            label=""
+                            color="orange"
+                            value="orange"
+                            hide-details
+                        ></v-checkbox>
+                    </td>
+                    <td>
+                        <v-checkbox
+                            v-model="ex4"
+                            label=""
+                            color="orange"
+                            value="orange"
+                            hide-details
+                        ></v-checkbox>
+                    </td>
+                    <td>
+                        <v-checkbox
+                            v-model="ex4"
+                            label=""
+                            color="orange"
+                            value="orange"
+                            hide-details
+                        ></v-checkbox>
+                    </td>
+                </tr>
+            </tbody>
+        </v-table>
     </div>
 </template>
 
@@ -60,7 +93,10 @@ import modulePermission from '../helper/modulePermission.js'
 
     const apiData = ref([])
     const ex4 = ref("ki jani")
+    const roleRef = ref('')
     const canPerform = modulePermission(moduleName)
+
+    const items = ['User']
 
     const fetchData = async () => {
         await axios({
