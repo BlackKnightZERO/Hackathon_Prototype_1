@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use App\Http\Resources\MinistryResource;
-use App\Models\Module;
+use App\Http\Resources\RoleResource;
+use App\Models\Role;
 
 class RolePermissionController extends Controller
 {
@@ -13,10 +13,11 @@ class RolePermissionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Module::with('permissions')->orderBy('id', 'DESC')->get();
-        // module model for all
+        return Role::with('permissions.module')
+                    ->where('id', $request->id)
+                    ->get();
     }
 
     /**

@@ -7,6 +7,7 @@
             density="compact"
             style="width:30%; margin: 10px 0px;"
             v-model="roleRef"
+            @update:modelValue="fetchRolePermissionData"
         ></v-select>
         <v-table density="compact">
             <thead>
@@ -48,7 +49,8 @@ import modulePermission from '../helper/modulePermission.js'
 
     const apiRolesData = ref([])
     const apiModuleData = ref([])
-    const ex4 = ref("ki jani")
+    const apiRolePermissionData = ref([])
+    const ex4 = ref("")
     const roleRef = ref('')
     const canPerform = modulePermission(moduleName)
 
@@ -73,11 +75,27 @@ import modulePermission from '../helper/modulePermission.js'
             url: '/api/modules',
             data: {}
         }).then(res => {
-            console.log(res.data)
+            // console.log(res.data)
             apiModuleData.value = res.data.data
         }).catch(err => {
             console.log(err)
         })
+    }
+
+    const fetchRolePermissionData = async () => {
+        if(roleRef.value !== '') {
+            const role = apiRolesData.value.find( f => f.title === roleRef.value)
+            await axios({
+                method: 'GET',
+                url: '/api/role-permissions?id='+role.id,
+                data: {}
+            }).then(res => {
+                console.log(res.data)
+                apiRolePermissionData.value = res.data.data
+            }).catch(err => {
+                console.log(err)
+            })
+        }
     }
 
     onMounted(() => {
