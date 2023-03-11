@@ -15,9 +15,27 @@ class RolePermissionController extends Controller
      */
     public function index(Request $request)
     {
-        return Role::with('permissions.module')
+        $collection = Role::with('permissions.module')
                     ->where('id', $request->id)
                     ->get();
+
+        // return $collection;
+
+        $filtered = $collection[0]->permissions->map(function(Object $obj, int $key) {
+            return $obj->only(['module_id', 'id']);
+        });
+
+        $grouped = $filtered->mapToGroups(function (array $item, int $key) {
+            return [$item['module_id'] => $item['id']];
+        });
+         
+        // $grouped->all();
+
+        return collect()->merge([
+            'id' => $collection[0]->id,
+            'title' => $collection[0]->title,
+            'permissions' => $grouped,
+        ]);
     }
 
     /**

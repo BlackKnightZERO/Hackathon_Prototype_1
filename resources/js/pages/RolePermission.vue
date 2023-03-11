@@ -7,7 +7,7 @@
             density="compact"
             style="width:30%; margin: 10px 0px;"
             v-model="roleRef"
-            @update:modelValue="fetchRolePermissionData"
+            @update:modelValue="fetchRolePermissionModuleData"
         ></v-select>
         <v-table density="compact">
             <thead>
@@ -24,12 +24,11 @@
                 <tr v-for="data in apiModuleData" :key="data.id">
                     <td>{{ data.title }}</td>
                     <td>
-                        <div v-for="_data in data.permissions" :key="_data.id">
+                        <div v-if="roleRef!=''" v-for="_data in data.permissions" :key="_data.id">
                             <v-checkbox
-                                v-model="ex4"
+                                v-model="_data.value"
                                 :label="_data.title"
                                 color="orange"
-                                value="orange"
                                 hide-details
                                 density="compact"
                             ></v-checkbox>
@@ -49,8 +48,8 @@ import modulePermission from '../helper/modulePermission.js'
 
     const apiRolesData = ref([])
     const apiModuleData = ref([])
-    const apiRolePermissionData = ref([])
-    const ex4 = ref("")
+    const apiRolePermissionModuleData = ref([])
+    const formData = ref({})
     const roleRef = ref('')
     const canPerform = modulePermission(moduleName)
 
@@ -62,7 +61,6 @@ import modulePermission from '../helper/modulePermission.js'
             url: '/api/roles?compact',
             data: {}
         }).then(res => {
-            console.log(res.data)
             apiRolesData.value = res.data
         }).catch(err => {
             console.log(err)
@@ -75,14 +73,13 @@ import modulePermission from '../helper/modulePermission.js'
             url: '/api/modules',
             data: {}
         }).then(res => {
-            // console.log(res.data)
             apiModuleData.value = res.data.data
         }).catch(err => {
             console.log(err)
         })
     }
 
-    const fetchRolePermissionData = async () => {
+    const fetchRolePermissionModuleData = async () => {
         if(roleRef.value !== '') {
             const role = apiRolesData.value.find( f => f.title === roleRef.value)
             await axios({
@@ -90,12 +87,27 @@ import modulePermission from '../helper/modulePermission.js'
                 url: '/api/role-permissions?id='+role.id,
                 data: {}
             }).then(res => {
-                console.log(res.data)
-                apiRolePermissionData.value = res.data.data
+                apiRolePermissionModuleData.value = res.data.permissions
+                const updatedData = apiModuleData.value.map(m => {
+                    let moddedPermissions = m.permissions.map( n => {
+                        return checkPermission(m, n, res.data.permissions) ? {...n, value:true} : {...n, value:false}
+                    })
+                    return {...m, permissions: moddedPermissions}
+                })
+                apiModuleData.value = updatedData
             }).catch(err => {
                 console.log(err)
             })
         }
+    }
+
+    const checkPermission = (module, modulePermission, rolePermissionModule) => {
+        for (const [key, value] of Object.entries( rolePermissionModule )) {
+            if(parseInt(key) == parseInt(module.id) && value.includes(parseInt(modulePermission.id))) {
+                return true
+            }
+        }
+        return false
     }
 
     onMounted(() => {
