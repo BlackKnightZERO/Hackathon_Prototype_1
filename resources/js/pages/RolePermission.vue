@@ -9,34 +9,45 @@
             v-model="roleRef"
             @update:modelValue="fetchRolePermissionModuleData"
         ></v-select>
-        <v-table density="compact">
-            <thead>
-                <tr>
-                    <th class="text-left">
-                        Module
-                    </th>
-                    <th class="text-left">
-                        Permissions
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="data in apiModuleData" :key="data.id">
-                    <td>{{ data.title }}</td>
-                    <td>
-                        <div v-if="roleRef!=''" v-for="_data in data.permissions" :key="_data.id">
-                            <v-checkbox
-                                v-model="_data.value"
-                                :label="_data.title"
-                                color="orange"
-                                hide-details
-                                density="compact"
-                            ></v-checkbox>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </v-table>
+        <v-form @submit.prevent="submitForm" ref="permissionForm">
+            <v-table density="compact">
+                <thead>
+                    <tr>
+                        <th class="text-left">
+                            Module
+                        </th>
+                        <th class="text-left">
+                            Permissions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="data in apiModuleData" :key="data.id">
+                        <td>{{ data.title }}</td>
+                        <td>
+                            <div v-if="roleRef!=''" v-for="_data in data.permissions" :key="_data.id">
+                                <v-checkbox
+                                    v-model="_data.value"
+                                    :label="_data.title"
+                                    color="orange"
+                                    hide-details
+                                    density="compact"
+                                ></v-checkbox>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </v-table>
+            <v-card-actions class="d-flex align-start flex-column">
+                <v-btn v-if="roleRef!='' && canPerform.includes('UPDATE')" 
+                    type="submit" 
+                    :loading="loading" 
+                    border 
+                    color="warning">
+                    Update
+                </v-btn>
+            </v-card-actions>
+        </v-form>
     </div>
 </template>
 
@@ -51,9 +62,9 @@ import modulePermission from '../helper/modulePermission.js'
     const apiRolePermissionModuleData = ref([])
     const formData = ref({})
     const roleRef = ref('')
+    const loading = ref(false)
+    const permissionForm = ref(null)
     const canPerform = modulePermission(moduleName)
-
-    const items = ['User']
 
     const fetchRoleData = async () => {
         await axios({
@@ -87,10 +98,10 @@ import modulePermission from '../helper/modulePermission.js'
                 url: '/api/role-permissions?id='+role.id,
                 data: {}
             }).then(res => {
-                apiRolePermissionModuleData.value = res.data.permissions
+                apiRolePermissionModuleData.value = res.data[0].permissions
                 const updatedData = apiModuleData.value.map(m => {
                     let moddedPermissions = m.permissions.map( n => {
-                        return checkPermission(m, n, res.data.permissions) ? {...n, value:true} : {...n, value:false}
+                        return checkPermission(m, n, res.data[0].permissions) ? {...n, value:true} : {...n, value:false}
                     })
                     return {...m, permissions: moddedPermissions}
                 })
@@ -103,11 +114,37 @@ import modulePermission from '../helper/modulePermission.js'
 
     const checkPermission = (module, modulePermission, rolePermissionModule) => {
         for (const [key, value] of Object.entries( rolePermissionModule )) {
-            if(parseInt(key) == parseInt(module.id) && value.includes(parseInt(modulePermission.id))) {
+            if(parseInt(key) === parseInt(module.id) && value.includes(parseInt(modulePermission.id))) {
                 return true
             }
         }
         return false
+    }
+
+    const submitForm = async () => {
+        const role = apiRolesData.value.find( f => f.title === roleRef.value)
+        await axios({
+            method: 'PUT',
+            url: '/api/role-permissions/'+role.id,
+            data: {
+                syncData: apiModuleData.value,
+            }
+        }).then(res => {
+            console.log(res)
+            // store.dispatch('UPDATE_ALERT', {
+            //    value: true,
+            //    type: 'success',
+            //    text: 'Login Successful',
+            // })
+        }).catch(err => {
+            // const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Login Failed'
+            // store.dispatch('UPDATE_ALERT', {
+            //    value: true,
+            //    type: 'error',
+            //    text: alertMsg,
+            // })
+            console.log(err)
+        })
     }
 
     onMounted(() => {
@@ -121,6 +158,6 @@ import modulePermission from '../helper/modulePermission.js'
 
 <style scoped>
 tbody tr:nth-of-type(odd) {
-   background-color: rgba(0, 0, 0, .03);
- }
+    background-color: rgba(0, 0, 0, .03);
+}
 </style>
