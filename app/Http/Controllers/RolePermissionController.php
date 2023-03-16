@@ -18,25 +18,7 @@ class RolePermissionController extends Controller
      */
     public function index(Request $request)
     {
-        $collection = Role::with('permissions.module')
-                    ->where('id', $request->id)
-                    ->get();
-
-        $filtered = $collection[0]->permissions->map(function(Object $obj, int $key) {
-            return $obj->only(['module_id', 'id']);
-        });
-
-        $grouped = $filtered->mapToGroups(function (array $item, int $key) {
-            return [$item['module_id'] => $item['id']];
-        });
-
-        return response()->json([
-            collect()->merge([
-                'id' => $collection[0]->id,
-                'title' => $collection[0]->title,
-                'permissions' => $grouped,
-            ])
-            ], 200);
+        //
     }
 
     /**
@@ -58,7 +40,25 @@ class RolePermissionController extends Controller
      */
     public function show($id)
     {
-        //
+        $collection = Role::with('permissions.module')
+                    ->where('id', $id)
+                    ->get();
+
+        $filtered = $collection[0]->permissions->map(function(Object $obj, int $key) {
+            return $obj->only(['module_id', 'id']);
+        });
+
+        $grouped = $filtered->mapToGroups(function (array $item, int $key) {
+            return [$item['module_id'] => $item['id']];
+        });
+
+        return response()->json([
+            collect()->merge([
+                'id' => $collection[0]->id,
+                'title' => $collection[0]->title,
+                'permissions' => $grouped,
+            ])
+            ], 200);
     }
 
     /**
@@ -95,9 +95,7 @@ class RolePermissionController extends Controller
         ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return $this->error([
-                'Failed to update permissions'
-            ]);
+            return $this->error('', 'Failed to update permissions', 500);
             // Write On Log
         }
     }

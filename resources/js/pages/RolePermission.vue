@@ -54,6 +54,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import modulePermission from '../helper/modulePermission.js'
+import store from '../store/index.js'
 
     const moduleName = 'Role-permission'
 
@@ -95,7 +96,7 @@ import modulePermission from '../helper/modulePermission.js'
             const role = apiRolesData.value.find( f => f.title === roleRef.value)
             await axios({
                 method: 'GET',
-                url: '/api/role-permissions?id='+role.id,
+                url: '/api/role-permissions/'+role.id,
                 data: {}
             }).then(res => {
                 apiRolePermissionModuleData.value = res.data[0].permissions
@@ -130,19 +131,18 @@ import modulePermission from '../helper/modulePermission.js'
                 syncData: apiModuleData.value,
             }
         }).then(res => {
-            console.log(res)
-            // store.dispatch('UPDATE_ALERT', {
-            //    value: true,
-            //    type: 'success',
-            //    text: 'Login Successful',
-            // })
+            store.dispatch('UPDATE_ALERT', {
+               value: true,
+               type: 'success',
+               text: res?.data?.data?.message ? res?.data?.data?.message : 'Operation Successful',
+            })
         }).catch(err => {
-            // const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Login Failed'
-            // store.dispatch('UPDATE_ALERT', {
-            //    value: true,
-            //    type: 'error',
-            //    text: alertMsg,
-            // })
+            const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+            store.dispatch('UPDATE_ALERT', {
+               value: true,
+               type: 'error',
+               text: alertMsg,
+            })
             console.log(err)
         })
     }
