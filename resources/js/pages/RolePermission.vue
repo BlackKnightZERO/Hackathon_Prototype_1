@@ -123,6 +123,7 @@ import store from '../store/index.js'
     }
 
     const submitForm = async () => {
+        loading.value = true
         const role = apiRolesData.value.find( f => f.title === roleRef.value)
         await axios({
             method: 'PUT',
@@ -145,6 +146,7 @@ import store from '../store/index.js'
             })
             console.log(err)
         })
+        loading.value = false
     }
 
     onMounted(() => {
