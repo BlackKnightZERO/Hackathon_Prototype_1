@@ -137,6 +137,7 @@ import store from '../store/index.js'
                type: 'success',
                text: res?.data?.data?.message ? res?.data?.data?.message : 'Operation Successful',
             })
+            fetchRolePermissionModuleData()
         }).catch(err => {
             const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
             store.dispatch('UPDATE_ALERT', {
