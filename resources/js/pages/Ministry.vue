@@ -1,16 +1,29 @@
 <template>
     <div v-if="canPerform.includes('INDEX')">
         <h2>{{ moduleName }}</h2>
-        <v-text-field
-            density="compact"
-            variant="underlined"
-            label="Search.."
-            append-inner-icon="mdi-magnify"
-            single-line
-            hide-details
-            v-model="searchValue"
-            style="width:30%; margin: 10px 0px;"
-        ></v-text-field>
+        <div class="d-flex justify-space-between">
+            <div>
+                <v-text-field
+                    density="compact"
+                    variant="underlined"
+                    label="Search.."
+                    append-inner-icon="mdi-magnify"
+                    single-line
+                    hide-details
+                    v-model="searchValue"
+                    style="width:12rem; margin: 10px 0px;"
+                ></v-text-field>
+            </div>
+            <div v-if="canPerform.includes('CREATE')">
+                <v-btn v-if="roleRef!='' && canPerform.includes('UPDATE')" 
+                    type="submit" 
+                    :loading="loading"
+                    size="small" 
+                    color="warning">
+                    + Add
+                </v-btn>
+            </div>
+        </div>
 
         <EasyDataTable
             v-model:server-options="serverOptions"
