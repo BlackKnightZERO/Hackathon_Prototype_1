@@ -76,6 +76,11 @@ import store from '../store/index.js'
             apiRolesData.value = res.data
         }).catch(err => {
             console.log(err)
+            // store.dispatch('UPDATE_ALERT', {
+            //    value: true,
+            //    type: 'error',
+            //    text: 'Oops! Something went wrong..',
+            // })
         })
     }
 

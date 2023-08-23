@@ -18,6 +18,7 @@ use App\Models\Ministry;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Models\Module;
+use App\Models\Inventory;
 
 class DatabaseSeeder extends Seeder
 {
@@ -109,6 +110,36 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Ministry::factory(29)->create();
+        
+        Inventory::create([
+            'title'         => 'HP Omen Laptop',
+            'type'          => 'Laptop',
+            'manufacturer'  => 'HP',
+            'model'         => 'HP 17-cp2030ca',
+            'serial_number' => '123456789',
+            'user_id'        => 1,
+            'slug'          => SlugService::createSlug(Inventory::class, 'slug', 'Inventory', ['unique' => true]),
+        ]);
+
+        Inventory::create([
+            'title'         => 'ErgoTech Wireless Mouse',
+            'type'          => 'Mouse',
+            'manufacturer'  => 'TechSavvy Innovations',
+            'model'         => 'HComfortGrip 5000',
+            'serial_number' => 'TSIMouseCG5000SN2023',
+            'user_id'        => 1,
+            'slug'          => SlugService::createSlug(Inventory::class, 'slug', 'Inventory', ['unique' => true]),
+        ]);
+
+        Inventory::create([
+            'title'         => 'ProType Mechanical Keyboard',
+            'type'          => 'Keyboard',
+            'manufacturer'  => 'KeyMasters Corp',
+            'model'         => 'ProKlick 750',
+            'serial_number' => 'KMCK750SN2023',
+            'user_id'        => 1,
+            'slug'          => SlugService::createSlug(Inventory::class, 'slug', 'Inventory', ['unique' => true]),
+        ]);
         
     }
 }

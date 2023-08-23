@@ -27,9 +27,9 @@ class MinistryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MinistryResource $request)
     {
-        //
+        Ministry::create($request->only(['title', 'description', 'slug']));
     }
 
     /**

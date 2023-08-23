@@ -76,4 +76,8 @@ class User extends Authenticatable
     // public function hasPermission($permission):bool {
     //     return $this->role->permissions->where('slug', $permission)->first() ? true : false;
     // }
+
+    public function inventories() {
+        return $this->hasMany(Inventory::class);
+    }
 }
