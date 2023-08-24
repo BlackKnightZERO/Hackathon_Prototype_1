@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Models\Role;
+use App\Models\Ticket;
 
 use App\Models\UserDetail;
 
@@ -79,5 +80,9 @@ class User extends Authenticatable
 
     public function inventories() {
         return $this->hasMany(Inventory::class);
+    }
+
+    public function tickets() {
+        return $this->hasMany(Ticket::class);
     }
 }

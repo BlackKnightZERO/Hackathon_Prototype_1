@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
 use App\Enums\ApproveStatusEnum;
+use App\Models\User;
+use App\Enums\TicketStatusEnum;
 
 class Ticket extends Model
 {
@@ -19,6 +21,7 @@ class Ticket extends Model
         'proposed_completion_day',
         'status',
         'user_id',
+        'approver_id',
         'verify_status',
         'slug',
     ];
@@ -31,11 +34,45 @@ class Ticket extends Model
         ];
     }
 
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function approver() {
+        return $this->belongsTo(User::class);
+    }
+
     public function scopeApproved($query) {
         return $query->where('verify_status', ApproveStatusEnum::APPROVED->value);
     }
 
-    public function scopeNotapproved($query) {
+    public function scopeNotApproved($query) {
         return $query->where('verify_status', ApproveStatusEnum::NOT_APPROVED->value);
+    }
+
+    public function scopeFilterByStatus($query, $status) {
+        switch ($status) {
+            case TicketStatusEnum::PENDING->value: 
+                return $query->where('status', TicketStatusEnum::PENDING->value);
+                break;
+            case TicketStatusEnum::IN_PROGRESS->value: 
+                return $query->where('status', TicketStatusEnum::IN_PROGRESS->value);
+                break;
+            case TicketStatusEnum::COMPLETED->value: 
+                return $query->where('status', TicketStatusEnum::COMPLETED->value);
+                break;
+            case TicketStatusEnum::QA_PASSED->value: 
+                return $query->where('status', TicketStatusEnum::QA_PASSED->value);
+                break;
+            case TicketStatusEnum::PROD_READY->value: 
+                return $query->where('status', TicketStatusEnum::PROD_READY->value);
+                break;
+            case TicketStatusEnum::IN_PROD->value: 
+                return $query->where('status', TicketStatusEnum::IN_PROD->value);
+                break;
+            default:
+                return $query;
+                break;  
+          }
     }
 }

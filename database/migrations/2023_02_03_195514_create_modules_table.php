@@ -25,6 +25,8 @@ return new class extends Migration
                 ModuleEnum::ROLE_PERMISSION->value,
                 ModuleEnum::COOPTERM->value,
                 ModuleEnum::MINISTRY->value,
+                ModuleEnum::TICKET->value,
+                ModuleEnum::INVENTORY->value,
             ])->default(ModuleEnum::DASHBOARD->value);
             $table->string('slug')->unique();
             $table->timestamps();

@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
+use App\Http\Resources\TicketResource;
+use Illuminate\Http\Request;
+use App\Enums\ApproveStatusEnum;
+use App\Enums\TicketStatusEnum;
 
 class TicketController extends Controller
 {
@@ -13,9 +17,20 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return TicketResource::collection(
+            Ticket::WHERE('ticket_id', 'LIKE', '%'.$request->search.'%')
+                    ->when($request->status, function ($query) use ($request) {
+                        return $query->FilterByStatus($request->status);
+                    })
+                    ->when($request->approveStatus, function ($query) use ($request) {
+                        return $request->approveStatus == ApproveStatusEnum::APPROVED->value
+                                ? $query->Approved()
+                                : $query->NotApproved();
+                    })
+                    ->orderBy('id', 'DESC')
+                    ->paginate(config('app.pagination')) );
     }
 
     /**

@@ -30,8 +30,13 @@ return new class extends Migration
                 TicketStatusEnum::PROD_READY->value,
                 TicketStatusEnum::IN_PROD->value,
             ])->default(TicketStatusEnum::PENDING->value);
-            $table->unsignedBigInteger('user_id')->comment('Verified By');
+            $table->unsignedBigInteger('user_id')->comment('Added By');
             $table->foreign('user_id')
+                    ->references('id')
+                    ->on('users')
+                    ->cascadeOnDelete();
+            $table->unsignedBigInteger('approver_id')->comment('Verified By');
+            $table->foreign('approver_id')
                     ->references('id')
                     ->on('users')
                     ->cascadeOnDelete();
@@ -39,6 +44,7 @@ return new class extends Migration
                 ApproveStatusEnum::APPROVED->value,
                 ApproveStatusEnum::NOT_APPROVED->value,
             ])->default(ApproveStatusEnum::NOT_APPROVED->value);
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }

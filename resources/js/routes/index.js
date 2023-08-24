@@ -7,6 +7,8 @@ import About from '../pages/About.vue'
 import Login from '../pages/Login.vue'
 import Ministry from '../pages/Ministry.vue'
 import RolePermission from '../pages/RolePermission.vue'
+import Ticket from '../pages/Ticket.vue'
+import Inventory from '../pages/Inventory.vue'
 
 import Page403 from '../pages/Page403.vue'
 
@@ -75,6 +77,18 @@ const routes = [
         path: '/ministry',
         name: 'ministry',
         component: Ministry,
+        meta : { auth : true }
+    },
+    { 
+        path: '/ticket',
+        name: 'ticket',
+        component: Ticket,
+        meta : { auth : true }
+    },
+    { 
+        path: '/inventory',
+        name: 'inventory',
+        component: Inventory,
         meta : { auth : true }
     },
     { 

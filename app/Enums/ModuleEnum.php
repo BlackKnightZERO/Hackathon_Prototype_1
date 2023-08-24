@@ -12,5 +12,5 @@ enum ModuleEnum : string {
     case COOPTERM   = 'Coop-term';
     case MINISTRY   = 'Ministry';
     case TICKET     = 'Ticket';
-    case Inventory  = 'Inventory';
+    case INVENTORY  = 'Inventory';
 }
