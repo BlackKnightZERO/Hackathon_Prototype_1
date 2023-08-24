@@ -27,7 +27,7 @@
                 </div>
                 <div class="mr-1">
                     <v-select
-                        :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+                        :items="apiStatusData"
                         label="Status"
                         density="compact"
                         style="min-width:5rem; margin: 10px 0px;"
@@ -37,11 +37,11 @@
                 </div>
                 <div class="mr-1">
                     <v-select
-                        :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-                        label="Status"
+                        :items="apiApproveStatusData"
+                        label="Approval"
                         density="compact"
                         style="min-width:5rem; margin: 10px 0px;"
-                        v-model="statusRef"
+                        v-model="approveStatusRef"
                         @update:modelValue="fetchFilteredStatusTableData"
                     ></v-select>
                 </div>
@@ -95,9 +95,12 @@ import modulePermission from '../helper/modulePermission.js'
     const moduleName = 'Ticket'
 
     const apiData = ref([])
+    const apiStatusData = ref([])
+    const apiApproveStatusData = ref([])
     const canPerform = modulePermission(moduleName)
     const searchValue = ref('')
     const statusRef = ref('')
+    const approveStatusRef = ref('')
 
     const loading = ref(false)
     const serverItemsLength = ref(0)
@@ -113,7 +116,7 @@ import modulePermission from '../helper/modulePermission.js'
     const headers = [
         { text: "Id", value: "id" },
         { text: "Ticket ID", value: "ticket_id" },
-        { text: "Developer", value: "developer" },
+        { text: "Developer", value: "user.full_name" },
         { text: "Start Day", value: "start_day" },
         { text: "End Day", value: "end_day" },
         { text: "Status", value: "status" },
@@ -121,11 +124,39 @@ import modulePermission from '../helper/modulePermission.js'
         { text: "Operation", value: "operation" },
     ]
 
+    const fetchStatus = async () => {
+        loading.value = true
+        await axios({
+            method: 'GET',
+            url: '/api/get-ticket-status',
+            data: {}
+        }).then(res => {
+            apiStatusData.value = res.data.data
+        }).catch(err => {
+            console.log(err)
+        })
+        loading.value = false
+    }
+
+    const fetchApproveStatus = async () => {
+        loading.value = true
+        await axios({
+            method: 'GET',
+            url: '/api/get-approve-status',
+            data: {}
+        }).then(res => {
+            apiApproveStatusData.value = res.data.data
+        }).catch(err => {
+            console.log(err)
+        })
+        loading.value = false
+    }
+
     const fetchData = async () => {
         loading.value = true
         await axios({
             method: 'GET',
-            url: '/api/ministries?page='+serverOptions.value.page+'&search='+searchValue.value,
+            url: '/api/tickets?page='+serverOptions.value.page+'&search='+searchValue.value+'&approveStatus='+approveStatusRef.value+'&status='+statusRef.value,
             data: {}
         }).then(res => {
             apiData.value = res.data.data
@@ -142,14 +173,17 @@ import modulePermission from '../helper/modulePermission.js'
 
     onMounted(() => {
         if(canPerform.includes('INDEX')) {
-            // fetchData()
+            fetchStatus()
+            fetchApproveStatus()
+            fetchData()
         }
     })
 
-    watch([serverOptions, () => searchValue], ([newServerOptions, newSearchValue]) => {
-        if(canPerform.includes('INDEX')) {
-            fetchData()
-        }
+    watch([ serverOptions, () => searchValue, () => statusRef, () => approveStatusRef], 
+        ([newServerOptions, newSearchValue, newStatusRef, newApproveStatusRef ]) => {
+            if(canPerform.includes('INDEX')) {
+                fetchData()
+            }
     }, { deep : true })
 
 </script>

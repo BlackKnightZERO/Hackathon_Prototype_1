@@ -19,6 +19,8 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
+        // if admin load all
+        // if user load his/her
         return TicketResource::collection(
             Ticket::WHERE('ticket_id', 'LIKE', '%'.$request->search.'%')
                     ->when($request->status, function ($query) use ($request) {
