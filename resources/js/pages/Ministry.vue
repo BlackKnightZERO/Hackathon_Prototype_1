@@ -6,7 +6,8 @@
                     style="float:right;"
                     :loading="loading"
                     size="small" 
-                    color="warning">
+                    color="warning"
+                    @click="toggleModal(true)">
                     + Add
                 </v-btn>
             </span>
@@ -63,18 +64,21 @@
                 </div>
             </template>
         </EasyDataTable>
+        <MinistryFormModel :dialog="dialog" :moduleName="moduleName" @toggleModal="toggleModal" />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue"
 import modulePermission from '../helper/modulePermission.js'
+import MinistryFormModel from '../components/Ministry/MinistryFormModal.vue'
 
     const moduleName = 'Ministry'
 
     const apiData = ref([])
     const canPerform = modulePermission(moduleName)
     const searchValue = ref('')
+    const dialog = ref(false)
 
     const loading = ref(false)
     const serverItemsLength = ref(0)
@@ -86,6 +90,11 @@ import modulePermission from '../helper/modulePermission.js'
         sortBy: 'title',
         sortType: 'desc',
     })
+
+    const emit = defineEmits(['toggleModal'])
+    const toggleModal = (status) => {
+        dialog.value = status
+    }
 
     const headers = [
         { text: "Id", value: "id" },

@@ -12,6 +12,8 @@ import Inventory from '../pages/Inventory.vue'
 
 import Page403 from '../pages/Page403.vue'
 
+import MinistryFormModal from '../components/Ministry/MinistryFormModal.vue'
+
 const routes = [
     {
         path: '/',
@@ -40,7 +42,8 @@ const routes = [
     { 
         path: '/profile',
         name: 'profile',
-        component: About,
+        // component: About,
+        component: MinistryFormModal,
         meta : { auth : true }
     },
     { 
