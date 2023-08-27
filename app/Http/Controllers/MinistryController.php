@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\MinistryResource;
 use App\Models\Ministry;
+use \Cviebrock\EloquentSluggable\Services\SlugService;
+use App\Traits\HttpRes;
+use App\Http\Requests\StoreMinistryRequest;
+use Illuminate\Support\Str;
 
 class MinistryController extends Controller
 {
+
+    use HttpRes;
+
     /**
      * Display a listing of the resource.
      *
@@ -27,9 +34,17 @@ class MinistryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(MinistryResource $request)
+    // public function store(Request $request)
+    public function store(StoreMinistryRequest $request)
     {
-        Ministry::create($request->only(['title', 'description', 'slug']));
+        $ministry = Ministry::create([
+            'title'         => $request->title,
+            'short_title'   => Str::substr((Str::upper($request->title)), 0,4),
+            'description'   => $request->description,
+            'slug'          => SlugService::createSlug(Ministry::class, 'slug', $request->title, ['unique' => true]),
+        ]);
+
+        return $this->success('201', 'Ministry Added Successfully', $ministry);
     }
 
     /**

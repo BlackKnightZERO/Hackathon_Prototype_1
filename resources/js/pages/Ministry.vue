@@ -64,7 +64,14 @@
                 </div>
             </template>
         </EasyDataTable>
-        <MinistryFormModel :dialog="dialog" :moduleName="moduleName" @toggleModal="toggleModal" />
+            <form @submit.prevent="submitAddForm" ref="addFormRef" method="POST">
+                <MinistryFormModel 
+                    :dialog="dialog" 
+                    :moduleName="moduleName" 
+                    @addInputChange="addInputChange"
+                    @toggleModal="toggleModal" 
+                    @submitAddForm="submitAddForm" />
+            </form>
     </div>
 </template>
 
@@ -72,6 +79,9 @@
 import { ref, onMounted, watch } from "vue"
 import modulePermission from '../helper/modulePermission.js'
 import MinistryFormModel from '../components/Ministry/MinistryFormModal.vue'
+import store from '../store/index.js'
+
+    const emit = defineEmits(['toggleModal', 'submitAddForm', 'addInputChange'])
 
     const moduleName = 'Ministry'
 
@@ -84,17 +94,8 @@ import MinistryFormModel from '../components/Ministry/MinistryFormModal.vue'
     const serverItemsLength = ref(0)
     const rowItems = [20]
 
-    const serverOptions = ref({
-        page: 1,
-        rowsPerPage: 20,
-        sortBy: 'title',
-        sortType: 'desc',
-    })
-
-    const emit = defineEmits(['toggleModal'])
-    const toggleModal = (status) => {
-        dialog.value = status
-    }
+    const addFormData = ref({title:'', description: ''})
+    const addFormRef = ref(null)
 
     const headers = [
         { text: "Id", value: "id" },
@@ -103,6 +104,21 @@ import MinistryFormModel from '../components/Ministry/MinistryFormModal.vue'
         { text: "Description", value: "description" },
         { text: "Operation", value: "operation" },
     ]
+
+    const serverOptions = ref({
+        page: 1,
+        rowsPerPage: 20,
+        sortBy: 'title',
+        sortType: 'desc',
+    })
+
+    const toggleModal = (status) => {
+        dialog.value = status
+    }
+
+    const addInputChange = (event) => {
+        addFormData.value = { ...addFormData.value, [event.target.name]: event.target.value }
+    }
 
     const fetchData = async () => {
         loading.value = true
@@ -117,6 +133,32 @@ import MinistryFormModel from '../components/Ministry/MinistryFormModal.vue'
             console.log(err)
         })
         loading.value = false
+    }
+
+    const submitAddForm = async () => {
+        loading.value = true
+        await axios({
+            method: 'POST',
+            url: '/api/ministries',
+            data: addFormData.value
+        }).then(res => {
+            apiData.value = [ res.data.data, ...apiData.value ]
+            store.dispatch('UPDATE_ALERT', {
+               value: true,
+               type: 'success',
+               text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+            })
+        }).catch(err => {
+            const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+            store.dispatch('UPDATE_ALERT', {
+               value: true,
+               type: 'error',
+               text: alertMsg,
+            })
+            console.log(err)
+        })
+        loading.value = false
+        toggleModal(false)
     }
 
     onMounted(() => {

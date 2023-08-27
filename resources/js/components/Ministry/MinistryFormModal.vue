@@ -16,6 +16,16 @@
                 <v-text-field
                   label="Title*"
                   required
+                  name="title"
+                  @input='$emit("addInputChange", $event)'
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  label="Description*"
+                  required
+                  name="description"
+                  @input='$emit("addInputChange", $event)'
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -34,7 +44,7 @@
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="$emit('toggleModal', false)"
+            @click="$emit('submitAddForm')"
           >
             Save
           </v-btn>
