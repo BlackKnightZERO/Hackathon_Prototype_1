@@ -8,6 +8,7 @@ use App\Models\Ministry;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
 use App\Traits\HttpRes;
 use App\Http\Requests\StoreMinistryRequest;
+use App\Http\Requests\UpdateMinistryRequest;
 use Illuminate\Support\Str;
 
 class MinistryController extends Controller
@@ -65,9 +66,18 @@ class MinistryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    // public function update(Request $request, $id)
+    public function update(UpdateMinistryRequest $request, $id)
     {
-        //
+        Ministry::where('id', $id)
+                    ->update([
+                        'title'         => $request->title,
+                        'short_title'   => Str::substr((Str::upper($request->title)), 0,4),
+                        'description'   => $request->description,
+                        'slug'          => SlugService::createSlug(Ministry::class, 'slug', $request->title, ['unique' => true]),
+                    ]);
+        $ministry = Ministry::find($id);
+        return $this->success('202', 'Ministry Updated Successfully', $ministry);
     }
 
     /**

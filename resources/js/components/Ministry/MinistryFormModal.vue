@@ -7,16 +7,19 @@
     >
       <v-card>
         <v-card-title>
-          <span class="text-h5">Add {{ moduleName }}</span>
+          <span class="text-h5" v-if="formData.id">Edit {{ moduleName }}</span>
+          <span class="text-h5" v-else>Add {{ moduleName }}</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
+                <input type="hidden" name="id" :value="formData.id" >
                 <v-text-field
                   label="Title*"
                   required
                   name="title"
+                  :model-value="formData.title"
                   @input='$emit("addInputChange", $event)'
                 ></v-text-field>
               </v-col>
@@ -25,6 +28,7 @@
                   label="Description*"
                   required
                   name="description"
+                  :model-value="formData.description"
                   @input='$emit("addInputChange", $event)'
                 ></v-text-field>
               </v-col>
@@ -37,14 +41,14 @@
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="$emit('toggleModal', false)"
+            @click="$emit('closeModal')"
           >
             Close
           </v-btn>
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="$emit('submitAddForm')"
+            @click="$emit('submitForm')"
           >
             Save
           </v-btn>
@@ -57,6 +61,6 @@
 <script setup>
 import { ref } from "vue"
 
-const { dialog, moduleName } = defineProps({ dialog: Boolean,  moduleName: String })
+const { dialog, moduleName, formData } = defineProps({ dialog: Boolean,  moduleName: String, formData: Object })
 
 </script>

@@ -7,7 +7,7 @@
                     :loading="loading"
                     size="small" 
                     color="warning"
-                    @click="toggleModal(true)">
+                    @click="openModal()">
                     + Add
                 </v-btn>
             </span>
@@ -34,6 +34,7 @@
             :headers="headers"
             :items="apiData"
             :rows-items="rowItems"
+            show-index
         >
             <template #item-operation="item">
                 <div class="operation-wrapper">
@@ -42,6 +43,7 @@
                         color="success"
                         size="x-small"
                         v-if="canPerform.includes('UPDATE')"
+                        @click="editData(item.id, item.index)"
                     >
                         Edit
                         <v-icon
@@ -64,13 +66,15 @@
                 </div>
             </template>
         </EasyDataTable>
-            <form @submit.prevent="submitAddForm" ref="addFormRef" method="POST">
+            <form @submit.prevent="submitForm" ref="formRef">
                 <MinistryFormModel 
                     :dialog="dialog" 
                     :moduleName="moduleName" 
+                    :formData="formData"
                     @addInputChange="addInputChange"
-                    @toggleModal="toggleModal" 
-                    @submitAddForm="submitAddForm" />
+                    @openModal="openModal" 
+                    @closeModal="closeModal" 
+                    @submitForm="submitForm" />
             </form>
     </div>
 </template>
@@ -81,7 +85,7 @@ import modulePermission from '../helper/modulePermission.js'
 import MinistryFormModel from '../components/Ministry/MinistryFormModal.vue'
 import store from '../store/index.js'
 
-    const emit = defineEmits(['toggleModal', 'submitAddForm', 'addInputChange'])
+    const emit = defineEmits(['openModal', 'closeModal', 'submitForm', 'addInputChange'])
 
     const moduleName = 'Ministry'
 
@@ -94,11 +98,13 @@ import store from '../store/index.js'
     const serverItemsLength = ref(0)
     const rowItems = [20]
 
-    const addFormData = ref({title:'', description: ''})
-    const addFormRef = ref(null)
+    const formData = ref({title:'', description: ''})
+    const formRef = ref(null)
+
+    const targetIndex = ref(-1)
 
     const headers = [
-        { text: "Id", value: "id" },
+        // { text: "Id", value: "id" },
         { text: "Title", value: "title" },
         { text: "Abbr", value: "short_title" },
         { text: "Description", value: "description" },
@@ -112,12 +118,17 @@ import store from '../store/index.js'
         sortType: 'desc',
     })
 
-    const toggleModal = (status) => {
-        dialog.value = status
+    const openModal = () => {
+        dialog.value = true
+    }
+
+    const closeModal = () => {
+        clearForm()
+        dialog.value = false
     }
 
     const addInputChange = (event) => {
-        addFormData.value = { ...addFormData.value, [event.target.name]: event.target.value }
+        formData.value = { ...formData.value, [event.target.name]: event.target.value }
     }
 
     const fetchData = async () => {
@@ -135,30 +146,66 @@ import store from '../store/index.js'
         loading.value = false
     }
 
-    const submitAddForm = async () => {
+    const submitForm = async () => {
         loading.value = true
-        await axios({
-            method: 'POST',
-            url: '/api/ministries',
-            data: addFormData.value
-        }).then(res => {
-            apiData.value = [ res.data.data, ...apiData.value ]
-            store.dispatch('UPDATE_ALERT', {
-               value: true,
-               type: 'success',
-               text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+        if( formData.value?.id ) {
+            await axios({
+                method: 'PUT',
+                url: '/api/ministries/'+formData.value.id,
+                data: formData.value
+            }).then(res => {
+                let newData = apiData.value.map(item => item.id == formData.value.id ? res.data.data : item);
+                apiData.value = newData
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'success',
+                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                })
+            }).catch(err => {
+                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'error',
+                   text: alertMsg,
+                })
+                console.log(err)
             })
-        }).catch(err => {
-            const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
-            store.dispatch('UPDATE_ALERT', {
-               value: true,
-               type: 'error',
-               text: alertMsg,
+        } else {
+            await axios({
+                method: 'POST',
+                url: '/api/ministries',
+                data: formData.value
+            }).then(res => {
+                apiData.value = [ res.data.data, ...apiData.value ]
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'success',
+                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                })
+            }).catch(err => {
+                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'error',
+                   text: alertMsg,
+                })
+                console.log(err)
             })
-            console.log(err)
-        })
+        }
         loading.value = false
-        toggleModal(false)
+        closeModal()
+        clearForm()
+    }
+
+    const editData = (id, idx) => {
+        targetIndex.value = idx
+        const filteredData = apiData.value.filter(f => f.id === id)
+        formData.value = filteredData[0]
+        openModal()
+    }
+
+    const clearForm = () => {
+        formData.value = {title:'', description: ''}
     }
 
     onMounted(() => {

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMinistryRequest extends FormRequest
 {
@@ -24,10 +25,9 @@ class UpdateMinistryRequest extends FormRequest
     public function rules()
     {
         return [
-            'id'            => ['required', 'sometimes', 'unique:ministries,id'],
+            'id'            => ['required', 'sometimes', Rule::unique('ministries', 'id')->ignore($this->id)],
             'title'         => ['required', 'string'],
             'description'   => ['required', 'string'],
-            'slug'          => ['required', 'string'],
         ];
     }
 }

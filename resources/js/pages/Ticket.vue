@@ -55,6 +55,7 @@
             :headers="headers"
             :items="apiData"
             :rows-items="rowItems"
+            show-index
         >
             <template #item-operation="item">
                 <div class="operation-wrapper">
@@ -114,7 +115,7 @@ import modulePermission from '../helper/modulePermission.js'
     })
 
     const headers = [
-        { text: "Id", value: "id" },
+        // { text: "Id", value: "id" },
         { text: "Ticket ID", value: "ticket_id" },
         { text: "Developer", value: "user.full_name" },
         { text: "Start Day", value: "start_day" },
