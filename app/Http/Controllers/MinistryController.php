@@ -88,6 +88,7 @@ class MinistryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Ministry::destroy($id);
+        return $this->success('200', 'Ministry Deleted Successfully', []);
     }
 }

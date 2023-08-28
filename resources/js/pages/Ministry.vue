@@ -56,6 +56,7 @@
                         color="error"
                         size="x-small"
                         v-if="canPerform.includes('DELETE')"
+                        @click="deleteData(item.id, item.index)"
                     >
                         Delete
                         <v-icon
@@ -101,8 +102,6 @@ import store from '../store/index.js'
     const formData = ref({title:'', description: ''})
     const formRef = ref(null)
 
-    const targetIndex = ref(-1)
-
     const headers = [
         // { text: "Id", value: "id" },
         { text: "Title", value: "title" },
@@ -118,19 +117,6 @@ import store from '../store/index.js'
         sortType: 'desc',
     })
 
-    const openModal = () => {
-        dialog.value = true
-    }
-
-    const closeModal = () => {
-        clearForm()
-        dialog.value = false
-    }
-
-    const addInputChange = (event) => {
-        formData.value = { ...formData.value, [event.target.name]: event.target.value }
-    }
-
     const fetchData = async () => {
         loading.value = true
         await axios({
@@ -144,6 +130,19 @@ import store from '../store/index.js'
             console.log(err)
         })
         loading.value = false
+    }
+
+    const openModal = () => {
+        dialog.value = true
+    }
+
+    const closeModal = () => {
+        clearForm()
+        dialog.value = false
+    }
+
+    const addInputChange = (event) => {
+        formData.value = { ...formData.value, [event.target.name]: event.target.value }
     }
 
     const submitForm = async () => {
@@ -197,11 +196,36 @@ import store from '../store/index.js'
         clearForm()
     }
 
-    const editData = (id, idx) => {
-        targetIndex.value = idx
+    const editData = (id) => {
         const filteredData = apiData.value.filter(f => f.id === id)
         formData.value = filteredData[0]
         openModal()
+    }
+
+    const deleteData = async (id) => {
+        if(confirm('are you sure?')){
+            await axios({
+                method: 'DELETE',
+                url: '/api/ministries/'+id,
+                data: {}
+            }).then(res => {
+                let newData = apiData.value.filter(item => item.id != id);
+                apiData.value = newData
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'success',
+                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                })
+            }).catch(err => {
+                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'error',
+                   text: alertMsg,
+                })
+                console.log(err)
+            })
+        }
     }
 
     const clearForm = () => {
