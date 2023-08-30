@@ -9,6 +9,7 @@ use App\Http\Resources\TicketResource;
 use Illuminate\Http\Request;
 use App\Enums\ApproveStatusEnum;
 use App\Enums\TicketStatusEnum;
+use App\Enums\RoleEnum;
 
 class TicketController extends Controller
 {
@@ -19,10 +20,10 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-        // if admin load all
-        // if user load his/her
         return TicketResource::collection(
-            Ticket::WHERE('ticket_id', 'LIKE', '%'.$request->search.'%')
+            Ticket::when(auth()->user()->role->title == RoleEnum::USER->value, function ($query) {
+                        return $query->WHERE('user_id', auth()->user()->id);
+                    })
                     ->when($request->status, function ($query) use ($request) {
                         return $query->FilterByStatus($request->status);
                     })
@@ -31,6 +32,7 @@ class TicketController extends Controller
                                 ? $query->Approved()
                                 : $query->NotApproved();
                     })
+                    ->WHERE('ticket_id', 'LIKE', '%'.$request->search.'%')
                     ->orderBy('id', 'DESC')
                     ->paginate(config('app.pagination')) );
     }

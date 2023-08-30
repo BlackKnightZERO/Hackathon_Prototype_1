@@ -93,12 +93,12 @@ import store from '../store/index.js'
     const apiData = ref([])
     const canPerform = modulePermission(moduleName)
     const searchValue = ref('')
-    const dialog = ref(false)
 
     const loading = ref(false)
     const serverItemsLength = ref(0)
     const rowItems = [20]
 
+    const dialog = ref(false)
     const formData = ref({title:'', description: ''})
     const formRef = ref(null)
 

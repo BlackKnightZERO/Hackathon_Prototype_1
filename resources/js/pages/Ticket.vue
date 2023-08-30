@@ -6,7 +6,8 @@
                     style="float:right;"
                     :loading="loading"
                     size="small" 
-                    color="warning">
+                    color="warning"
+                    @click="openModal()">
                     + Add
                 </v-btn>
             </span>
@@ -32,7 +33,7 @@
                         density="compact"
                         style="min-width:5rem; margin: 10px 0px;"
                         v-model="statusRef"
-                        @update:modelValue="fetchFilteredStatusTableData"
+                        @update:modelValue="fetchData"
                     ></v-select>
                 </div>
                 <div class="mr-1">
@@ -42,7 +43,7 @@
                         density="compact"
                         style="min-width:5rem; margin: 10px 0px;"
                         v-model="approveStatusRef"
-                        @update:modelValue="fetchFilteredStatusTableData"
+                        @update:modelValue="fetchData"
                     ></v-select>
                 </div>
             </div>
@@ -86,12 +87,30 @@
                 </div>
             </template>
         </EasyDataTable>
+        <form @submit.prevent="submitForm" ref="formRef">
+                <TikcetFormModal 
+                    :dialog="dialog" 
+                    :moduleName="moduleName" 
+                    :formData="formData"
+                    :apiStatusData="apiStatusData"
+                    :apiApproveStatusData="apiApproveStatusData"
+                    :role="store.state.role"
+                    @inputChange="inputChange"
+                    @selectChange="selectChange"
+                    @openModal="openModal" 
+                    @closeModal="closeModal" 
+                    @submitForm="submitForm" />
+            </form>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from "vue"
 import modulePermission from '../helper/modulePermission.js'
+import TikcetFormModal from '../components/Ticket/TicketFormModal.vue'
+import store from '../store/index.js'
+
+    const emit = defineEmits(['openModal', 'closeModal', 'submitForm', 'inputChange', 'selectChange'])
 
     const moduleName = 'Ticket'
 
@@ -106,6 +125,10 @@ import modulePermission from '../helper/modulePermission.js'
     const loading = ref(false)
     const serverItemsLength = ref(0)
     const rowItems = [20]
+
+    const dialog = ref(false)
+    const formData = ref({})
+    const formRef = ref(null)
 
     const serverOptions = ref({
         page: 1,
@@ -168,8 +191,109 @@ import modulePermission from '../helper/modulePermission.js'
         loading.value = false
     }
 
-    const fetchFilteredStatusTableData = async () => {
-        
+    const openModal = () => {
+        dialog.value = true
+    }
+
+    const closeModal = () => {
+        clearForm()
+        dialog.value = false
+    }
+
+    const inputChange = (event) => {
+        formData.value = { ...formData.value, [event.target.name]: event.target.value }
+        console.log(formData.value)
+    }
+    const selectChange = (name, value) => {
+        formData.value = { ...formData.value, [name]: value }
+        console.log(formData.value)
+    }
+
+    const submitForm = async () => {
+        loading.value = true
+        if( formData.value?.id ) {
+            await axios({
+                method: 'PUT',
+                url: '/api/ministries/'+formData.value.id,
+                data: formData.value
+            }).then(res => {
+                let newData = apiData.value.map(item => item.id == formData.value.id ? res.data.data : item);
+                apiData.value = newData
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'success',
+                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                })
+            }).catch(err => {
+                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'error',
+                   text: alertMsg,
+                })
+                console.log(err)
+            })
+        } else {
+            await axios({
+                method: 'POST',
+                url: '/api/ministries',
+                data: formData.value
+            }).then(res => {
+                apiData.value = [ res.data.data, ...apiData.value ]
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'success',
+                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                })
+            }).catch(err => {
+                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'error',
+                   text: alertMsg,
+                })
+                console.log(err)
+            })
+        }
+        loading.value = false
+        closeModal()
+        clearForm()
+    }
+
+    const editData = (id) => {
+        const filteredData = apiData.value.filter(f => f.id === id)
+        formData.value = filteredData[0]
+        openModal()
+    }
+
+    const deleteData = async (id) => {
+        if(confirm('are you sure?')){
+            await axios({
+                method: 'DELETE',
+                url: '/api/ministries/'+id,
+                data: {}
+            }).then(res => {
+                let newData = apiData.value.filter(item => item.id != id);
+                apiData.value = newData
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'success',
+                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                })
+            }).catch(err => {
+                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                store.dispatch('UPDATE_ALERT', {
+                   value: true,
+                   type: 'error',
+                   text: alertMsg,
+                })
+                console.log(err)
+            })
+        }
+    }
+
+    const clearForm = () => {
+        formData.value = {title:'', description: ''}
     }
 
     onMounted(() => {
