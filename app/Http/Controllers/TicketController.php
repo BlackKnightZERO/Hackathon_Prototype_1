@@ -10,9 +10,13 @@ use Illuminate\Http\Request;
 use App\Enums\ApproveStatusEnum;
 use App\Enums\TicketStatusEnum;
 use App\Enums\RoleEnum;
+use \Cviebrock\EloquentSluggable\Services\SlugService;
+use App\Traits\HttpRes;
+use Illuminate\Support\Str;
 
 class TicketController extends Controller
 {
+    use HttpRes;
     /**
      * Display a listing of the resource.
      *
@@ -55,7 +59,20 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request)
     {
-        //
+        $ticket = Ticket::create([
+            'ticket_id'     => $request->ticket_id,
+            'link'          => $request->link,
+            'start_day'     => $request->start_day,
+            'end_day'       => $request->end_day,
+            'proposed_completion_day'=> $request->proposed_completion_day,
+            'status'        => $request->status,
+            'user_id'       => $request->user_id,
+            'approver_id'   => $request->approver_id,
+            'verify_status' => $request->verify_status,
+            'slug'          => SlugService::createSlug(Ticket::class, 'slug', $request->ticket_id, ['unique' => true]),
+        ]);
+
+        return $this->success('201', 'Ticket Added Successfully', $ticket);
     }
 
     /**

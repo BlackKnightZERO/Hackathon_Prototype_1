@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\MinistryResource;
 use App\Models\Ministry;
-use \Cviebrock\EloquentSluggable\Services\SlugService;
-use App\Traits\HttpRes;
 use App\Http\Requests\StoreMinistryRequest;
 use App\Http\Requests\UpdateMinistryRequest;
+use \Cviebrock\EloquentSluggable\Services\SlugService;
+use App\Traits\HttpRes;
 use Illuminate\Support\Str;
 
 class MinistryController extends Controller

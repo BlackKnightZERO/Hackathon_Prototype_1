@@ -130,7 +130,17 @@ import store from '../store/index.js'
     const rowItems = [20]
 
     const dialog = ref(false)
-    const formData = ref({})
+    const formData = ref({
+        ticket_id: '',
+        link: '',
+        start_day: '',
+        end_day: '',
+        proposed_completion_day: '',
+        status: '',
+        user_id: '',
+        approver_id: '',
+        verify_status: '',
+    })
     const formRef = ref(null)
 
     const serverOptions = ref({
@@ -146,6 +156,7 @@ import store from '../store/index.js'
         { text: "Developer", value: "user.full_name" },
         { text: "Start Day", value: "start_day" },
         { text: "End Day", value: "end_day" },
+        { text: "Proposed Day", value: "proposed_completion_day" },
         { text: "Status", value: "status" },
         { text: "Approval", value: "verify_status" },
         { text: "Operation", value: "operation" },
@@ -220,7 +231,6 @@ import store from '../store/index.js'
 
     const inputChange = (event) => {
         formData.value = { ...formData.value, [event.target.name]: event.target.value }
-        console.log(formData.value)
     }
 
     const selectChange = (name, filterable = false, value) => {
@@ -235,6 +245,13 @@ import store from '../store/index.js'
 
     const submitForm = async () => {
         loading.value = true
+
+        if( store.state.role === 'Admin' ) {
+            formData.value = { ...formData.value, approver_id: store.state.user.id }
+        } else {
+            formData.value = { ...formData.value, user_id: store.state.user.id, approver_id: 1 }
+        }
+
         if( formData.value?.id ) {
             await axios({
                 method: 'PUT',
@@ -260,7 +277,7 @@ import store from '../store/index.js'
         } else {
             await axios({
                 method: 'POST',
-                url: '/api/ministries',
+                url: '/api/tickets',
                 data: formData.value
             }).then(res => {
                 apiData.value = [ res.data.data, ...apiData.value ]
@@ -317,7 +334,17 @@ import store from '../store/index.js'
     }
 
     const clearForm = () => {
-        formData.value = {title:'', description: ''}
+        formData.value = {
+                ticket_id: '',
+                link: '',
+                start_day: '',
+                end_day: '',
+                proposed_completion_day: '',
+                status: '',
+                user_id: '',
+                approver_id: '',
+                verify_status: '',
+            }
     }
 
     onMounted(() => {

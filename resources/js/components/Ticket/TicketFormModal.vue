@@ -32,16 +32,16 @@
                   @input='$emit("inputChange", $event)'
                 ></v-text-field>
               </v-col>
-              <v-col cols="12">
+              <v-col cols="12" v-if="role=='Admin'">
                 <v-select
-                        :items="apiUserNameData"
-                        label="Developer"
-                        density="compact"
-                        style="min-width:5rem; margin: 10px 0px;"
-                        name="user_id"
-                        :model-value="formData.user_id"
-                        @update:modelValue='$emit("selectChange", "user_id", true, $event)'
-                    ></v-select>
+                    :items="apiUserNameData"
+                    label="Developer"
+                    density="compact"
+                    style="min-width:5rem; margin: 10px 0px;"
+                    name="user_id"
+                    :model-value="formData.user_id"
+                    @update:modelValue='$emit("selectChange", "user_id", true, $event)'
+                ></v-select>
               </v-col>
               <v-col cols="4">
                 <label for="">Start Day</label><br><br>
@@ -69,15 +69,15 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="4">
-                    <v-select
-                        :items="apiStatusData"
-                        label="Status"
-                        density="compact"
-                        style="min-width:5rem; margin: 10px 0px;"
-                        name="status"
-                        :model-value="formData.status"
-                        @update:modelValue='$emit("selectChange", "status", false, $event)'
-                    ></v-select>
+                <v-select
+                    :items="apiStatusData"
+                    label="Status"
+                    density="compact"
+                    style="min-width:5rem; margin: 10px 0px;"
+                    name="status"
+                    :model-value="formData.status"
+                    @update:modelValue='$emit("selectChange", "status", false, $event)'
+                ></v-select>
               </v-col>
               <v-col cols="4">
                     <v-select
