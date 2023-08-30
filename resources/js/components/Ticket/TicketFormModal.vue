@@ -33,7 +33,15 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
-                <!-- if role admin load add in select  -->
+                <v-select
+                        :items="apiUserNameData"
+                        label="Developer"
+                        density="compact"
+                        style="min-width:5rem; margin: 10px 0px;"
+                        name="user_id"
+                        :model-value="formData.user_id"
+                        @update:modelValue='$emit("selectChange", "user_id", true, $event)'
+                    ></v-select>
               </v-col>
               <v-col cols="4">
                 <label for="">Start Day</label><br><br>
@@ -68,7 +76,7 @@
                         style="min-width:5rem; margin: 10px 0px;"
                         name="status"
                         :model-value="formData.status"
-                        @update:modelValue='$emit("selectChange", "status", $event)'
+                        @update:modelValue='$emit("selectChange", "status", false, $event)'
                     ></v-select>
               </v-col>
               <v-col cols="4">
@@ -79,7 +87,7 @@
                         style="min-width:5rem; margin: 10px 0px;"
                         name="verify_status"
                         :model-value="formData.verify_status"
-                        @update:modelValue='$emit("selectChange", "verify_status", $event)'
+                        @update:modelValue='$emit("selectChange", "verify_status", false, $event)'
                     ></v-select>
               </v-col>
             </v-row>
@@ -111,13 +119,22 @@
 <script setup>
 import { ref } from "vue"
 
-const { dialog, moduleName, formData } = defineProps({ 
-        moduleName: String, 
+const { role, moduleName, dialog, formData, apiStatusData, apiApproveStatusData, apiUserData, apiUserNameData } = defineProps({ 
         role: String, 
+        moduleName: String, 
         dialog: Boolean,  
         formData: Object,
         apiStatusData: Object,
         apiApproveStatusData: Object,
+        apiUserNameData: Object,
     })
+
+const userRef = ref('')
+
+const filterUser = () => {
+  console.log(apiUserData)
+  // const selected_user = apiUserData.value.find( f => f.full_name == userRef.value)
+  // console.log(selected_user)
+}
 
 </script>

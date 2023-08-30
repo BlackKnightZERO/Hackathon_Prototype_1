@@ -95,6 +95,7 @@
                     :apiStatusData="apiStatusData"
                     :apiApproveStatusData="apiApproveStatusData"
                     :role="store.state.role"
+                    :apiUserNameData="apiUserNameData"
                     @inputChange="inputChange"
                     @selectChange="selectChange"
                     @openModal="openModal" 
@@ -115,6 +116,8 @@ import store from '../store/index.js'
     const moduleName = 'Ticket'
 
     const apiData = ref([])
+    const apiUserData = ref([])
+    const apiUserNameData = ref([])
     const apiStatusData = ref([])
     const apiApproveStatusData = ref([])
     const canPerform = modulePermission(moduleName)
@@ -191,6 +194,21 @@ import store from '../store/index.js'
         loading.value = false
     }
 
+    const fetchUserData = async () => {
+        loading.value = true
+        await axios({
+            method: 'GET',
+            url: '/api/users?compact',
+            data: {}
+        }).then(res => {
+            apiUserData.value = res.data.data
+            apiUserNameData.value = apiUserData.value.map(m => m.full_name)
+        }).catch(err => {
+            console.log(err)
+        })
+        loading.value = false
+    }
+
     const openModal = () => {
         dialog.value = true
     }
@@ -204,8 +222,14 @@ import store from '../store/index.js'
         formData.value = { ...formData.value, [event.target.name]: event.target.value }
         console.log(formData.value)
     }
-    const selectChange = (name, value) => {
-        formData.value = { ...formData.value, [name]: value }
+
+    const selectChange = (name, filterable = false, value) => {
+        if(filterable) {
+            const selected_user = apiUserData.value.find( f => f.full_name == value)
+            formData.value = { ...formData.value, [name]: selected_user.id }  
+        } else {
+            formData.value = { ...formData.value, [name]: value }
+        }
         console.log(formData.value)
     }
 
@@ -301,6 +325,7 @@ import store from '../store/index.js'
             fetchStatus()
             fetchApproveStatus()
             fetchData()
+            fetchUserData()
         }
     })
 

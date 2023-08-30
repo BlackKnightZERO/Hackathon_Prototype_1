@@ -98,7 +98,7 @@ import store from '../store/index.js'
 
     const fetchRolePermissionModuleData = async () => {
         if(roleRef.value !== '') {
-            const role = apiRolesData.value.find( f => f.title === roleRef.value)
+            const role = apiRolesData.value.find( f => f.title == roleRef.value)
             await axios({
                 method: 'GET',
                 url: '/api/role-permissions/'+role.id,

@@ -10,6 +10,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UserController;
+
 use App\Enums\ApproveStatusEnum;
 use App\Enums\TicketStatusEnum;
 
@@ -35,6 +37,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/role-permissions', RolePermissionController::class);
     Route::apiResource('/tickets', TicketController::class);
+    Route::apiResource('/users', UserController::class);
 
     Route::get('/get-approve-status', function() {
         return response()->json([
