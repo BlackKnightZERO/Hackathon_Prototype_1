@@ -65,6 +65,7 @@
                         color="success"
                         size="x-small"
                         v-if="canPerform.includes('UPDATE')"
+                        @click="editData(item.id, item.index)"
                     >
                         Edit
                         <v-icon
@@ -77,6 +78,7 @@
                         color="error"
                         size="x-small"
                         v-if="canPerform.includes('DELETE')"
+                        @click="deleteData(item.id, item.index)"
                     >
                         Delete
                         <v-icon
@@ -96,6 +98,7 @@
                     :apiApproveStatusData="apiApproveStatusData"
                     :role="store.state.role"
                     :apiUserNameData="apiUserNameData"
+                    :userRef="userRef"
                     @inputChange="inputChange"
                     @selectChange="selectChange"
                     @openModal="openModal" 
@@ -124,6 +127,7 @@ import store from '../store/index.js'
     const searchValue = ref('')
     const statusRef = ref('')
     const approveStatusRef = ref('')
+    const userRef = ref('')
 
     const loading = ref(false)
     const serverItemsLength = ref(0)
@@ -141,6 +145,7 @@ import store from '../store/index.js'
         approver_id: '',
         verify_status: '',
     })
+    
     const formRef = ref(null)
 
     const serverOptions = ref({
@@ -227,10 +232,12 @@ import store from '../store/index.js'
     const closeModal = () => {
         clearForm()
         dialog.value = false
+        userRef.value = ''
     }
 
     const inputChange = (event) => {
         formData.value = { ...formData.value, [event.target.name]: event.target.value }
+        console.log(formData.value)
     }
 
     const selectChange = (name, filterable = false, value) => {
@@ -240,12 +247,12 @@ import store from '../store/index.js'
         } else {
             formData.value = { ...formData.value, [name]: value }
         }
-        console.log(formData.value)
     }
 
     const submitForm = async () => {
+        
         loading.value = true
-
+        
         if( store.state.role === 'Admin' ) {
             formData.value = { ...formData.value, approver_id: store.state.user.id }
         } else {
@@ -255,7 +262,7 @@ import store from '../store/index.js'
         if( formData.value?.id ) {
             await axios({
                 method: 'PUT',
-                url: '/api/ministries/'+formData.value.id,
+                url: '/api/tickets/'+formData.value.id,
                 data: formData.value
             }).then(res => {
                 let newData = apiData.value.map(item => item.id == formData.value.id ? res.data.data : item);
@@ -304,6 +311,7 @@ import store from '../store/index.js'
     const editData = (id) => {
         const filteredData = apiData.value.filter(f => f.id === id)
         formData.value = filteredData[0]
+        userRef.value = filteredData[0].user.full_name
         openModal()
     }
 
@@ -311,7 +319,7 @@ import store from '../store/index.js'
         if(confirm('are you sure?')){
             await axios({
                 method: 'DELETE',
-                url: '/api/ministries/'+id,
+                url: '/api/tickets/'+id,
                 data: {}
             }).then(res => {
                 let newData = apiData.value.filter(item => item.id != id);

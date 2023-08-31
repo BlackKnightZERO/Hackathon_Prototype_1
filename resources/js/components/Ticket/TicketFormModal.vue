@@ -39,7 +39,8 @@
                     density="compact"
                     style="min-width:5rem; margin: 10px 0px;"
                     name="user_id"
-                    :model-value="formData.user_id"
+                    required
+                    :model-value="userRef"
                     @update:modelValue='$emit("selectChange", "user_id", true, $event)'
                 ></v-select>
               </v-col>
@@ -47,16 +48,18 @@
                 <label for="">Start Day</label><br><br>
                 <input 
                     type="date" 
-                    name="start_day" 
-                    :model-value="formData.start_day"
+                    name="start_day"
+                    required
+                    :value="formData.start_day"
                     @input='$emit("inputChange", $event)'>
               </v-col>
               <v-col cols="4">
                 <label for="">End Day</label><br><br>
                 <input 
                     type="date" 
-                    name="end_day" 
-                    :model-value="formData.end_day"
+                    name="end_day"
+                    required
+                    :value="formData.end_day"
                     @input='$emit("inputChange", $event)'>
               </v-col>
               <v-col cols="4">
@@ -75,6 +78,7 @@
                     density="compact"
                     style="min-width:5rem; margin: 10px 0px;"
                     name="status"
+                    required
                     :model-value="formData.status"
                     @update:modelValue='$emit("selectChange", "status", false, $event)'
                 ></v-select>
@@ -86,6 +90,7 @@
                         density="compact"
                         style="min-width:5rem; margin: 10px 0px;"
                         name="verify_status"
+                        required
                         :model-value="formData.verify_status"
                         @update:modelValue='$emit("selectChange", "verify_status", false, $event)'
                     ></v-select>
@@ -119,22 +124,15 @@
 <script setup>
 import { ref } from "vue"
 
-const { role, moduleName, dialog, formData, apiStatusData, apiApproveStatusData, apiUserData, apiUserNameData } = defineProps({ 
+const { role, moduleName, userRef, dialog, formData, apiStatusData, apiApproveStatusData, apiUserNameData } = defineProps({ 
         role: String, 
-        moduleName: String, 
+        moduleName: String,  
+        userRef: String,  
         dialog: Boolean,  
         formData: Object,
         apiStatusData: Object,
         apiApproveStatusData: Object,
         apiUserNameData: Object,
     })
-
-const userRef = ref('')
-
-const filterUser = () => {
-  console.log(apiUserData)
-  // const selected_user = apiUserData.value.find( f => f.full_name == userRef.value)
-  // console.log(selected_user)
-}
 
 </script>

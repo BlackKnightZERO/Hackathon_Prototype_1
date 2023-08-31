@@ -59,7 +59,7 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request)
     {
-        $ticket = Ticket::create([
+        $data = Ticket::create([
             'ticket_id'     => $request->ticket_id,
             'link'          => $request->link,
             'start_day'     => $request->start_day,
@@ -72,7 +72,9 @@ class TicketController extends Controller
             'slug'          => SlugService::createSlug(Ticket::class, 'slug', $request->ticket_id, ['unique' => true]),
         ]);
 
-        return $this->success('201', 'Ticket Added Successfully', $ticket);
+        $ticket = TicketResource::collection(Ticket::WHERE('id', $data->id)->get());
+
+        return $this->success('201', 'Ticket Added Successfully', $ticket[0]);
     }
 
     /**
@@ -104,9 +106,23 @@ class TicketController extends Controller
      * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTicketRequest $request, Ticket $ticket)
+    public function update(UpdateTicketRequest $request, $id)
     {
-        //
+        Ticket::where('id', $id)
+                    ->update([
+                        'ticket_id'     => $request->ticket_id,
+                        'link'          => $request->link,
+                        'start_day'     => $request->start_day,
+                        'end_day'       => $request->end_day,
+                        'proposed_completion_day'=> $request->proposed_completion_day,
+                        'status'        => $request->status,
+                        'user_id'       => $request->user_id,
+                        'approver_id'   => $request->approver_id,
+                        'verify_status' => $request->verify_status,
+                        'slug'          => SlugService::createSlug(Ticket::class, 'slug', $request->ticket_id, ['unique' => true]),
+                    ]);
+        $ticket = TicketResource::collection(Ticket::where('id', $id)->get());
+        return $this->success('202', 'Ticket Updated Successfully', $ticket[0]);
     }
 
     /**
@@ -115,8 +131,9 @@ class TicketController extends Controller
      * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Ticket $ticket)
+    public function destroy($id)
     {
-        //
+        Ticket::destroy($id);
+        return $this->success('200', 'Ticket Deleted Successfully', []);
     }
 }

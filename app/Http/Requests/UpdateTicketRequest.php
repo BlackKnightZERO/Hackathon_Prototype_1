@@ -24,7 +24,16 @@ class UpdateTicketRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'id'                    => ['required'],
+            'ticket_id'             => ['required', 'string'],
+            'link'                  => ['required', 'string'],
+            'start_day'             => ['required'],
+            'end_day'               => ['required'],
+            'proposed_completion_day' => ['required'],
+            'status'                => ['required'],
+            'user_id'               => ['required'],
+            'approver_id'           => ['required'],
+            'verify_status'         => ['required'],
         ];
     }
 }
