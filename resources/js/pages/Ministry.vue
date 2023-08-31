@@ -67,7 +67,7 @@
                 </div>
             </template>
         </EasyDataTable>
-            <form @submit.prevent="submitForm" ref="formRef">
+            <v-form @submit.prevent="submitForm" ref="formRef">
                 <MinistryFormModel 
                     :dialog="dialog" 
                     :moduleName="moduleName" 
@@ -76,7 +76,7 @@
                     @openModal="openModal" 
                     @closeModal="closeModal" 
                     @submitForm="submitForm" />
-            </form>
+            </v-form>
     </div>
 </template>
 
@@ -146,54 +146,58 @@ import store from '../store/index.js'
     }
 
     const submitForm = async () => {
-        loading.value = true
-        if( formData.value?.id ) {
-            await axios({
-                method: 'PUT',
-                url: '/api/ministries/'+formData.value.id,
-                data: formData.value
-            }).then(res => {
-                let newData = apiData.value.map(item => item.id == formData.value.id ? res.data.data : item);
-                apiData.value = newData
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'success',
-                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+
+        const { valid } = await formRef.value.validate()
+        if( valid ) {
+            loading.value = true
+            if( formData.value?.id ) {
+                await axios({
+                    method: 'PUT',
+                    url: '/api/ministries/'+formData.value.id,
+                    data: formData.value
+                }).then(res => {
+                    let newData = apiData.value.map(item => item.id == formData.value.id ? res.data.data : item);
+                    apiData.value = newData
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'success',
+                    text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                    })
+                }).catch(err => {
+                    const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'error',
+                    text: alertMsg,
+                    })
+                    console.log(err)
                 })
-            }).catch(err => {
-                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'error',
-                   text: alertMsg,
+            } else {
+                await axios({
+                    method: 'POST',
+                    url: '/api/ministries',
+                    data: formData.value
+                }).then(res => {
+                    apiData.value = [ res.data.data, ...apiData.value ]
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'success',
+                    text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                    })
+                }).catch(err => {
+                    const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'error',
+                    text: alertMsg,
+                    })
+                    console.log(err)
                 })
-                console.log(err)
-            })
-        } else {
-            await axios({
-                method: 'POST',
-                url: '/api/ministries',
-                data: formData.value
-            }).then(res => {
-                apiData.value = [ res.data.data, ...apiData.value ]
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'success',
-                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
-                })
-            }).catch(err => {
-                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'error',
-                   text: alertMsg,
-                })
-                console.log(err)
-            })
+            }
+            loading.value = false
+            closeModal()
+            clearForm()
         }
-        loading.value = false
-        closeModal()
-        clearForm()
     }
 
     const editData = (id) => {

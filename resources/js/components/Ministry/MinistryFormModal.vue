@@ -19,6 +19,7 @@
                   label="Title*"
                   required
                   name="title"
+                  :rules="titleRules"
                   :model-value="formData.title"
                   @input='$emit("addInputChange", $event)'
                 ></v-text-field>
@@ -28,6 +29,7 @@
                   label="Description*"
                   required
                   name="description"
+                  :rules="descriptionRules"
                   :model-value="formData.description"
                   @input='$emit("addInputChange", $event)'
                 ></v-text-field>
@@ -62,5 +64,12 @@
 import { ref } from "vue"
 
 const { dialog, moduleName, formData } = defineProps({ dialog: Boolean,  moduleName: String, formData: Object })
+
+const titleRules = ref([
+      v => !!v || 'Title is required',
+   ])
+const descriptionRules = ref([
+      v => !!v || 'Description is required',
+   ])
 
 </script>

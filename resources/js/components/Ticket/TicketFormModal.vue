@@ -19,6 +19,7 @@
                   label="Ticket Id*"
                   required
                   name="ticket_id"
+                  :rules="ticketIdRules"
                   :model-value="formData.ticket_id"
                   @input='$emit("inputChange", $event)'
                 ></v-text-field>
@@ -28,6 +29,7 @@
                   label="Link*"
                   required
                   name="link"
+                  :rules="linkRules"
                   :model-value="formData.link"
                   @input='$emit("inputChange", $event)'
                 ></v-text-field>
@@ -40,33 +42,39 @@
                     style="min-width:5rem; margin: 10px 0px;"
                     name="user_id"
                     required
+                    :rules="developerRules"
                     :model-value="userRef"
                     @update:modelValue='$emit("selectChange", "user_id", true, $event)'
                 ></v-select>
               </v-col>
               <v-col cols="4">
-                <label for="">Start Day</label><br><br>
-                <input 
-                    type="date" 
-                    name="start_day"
+                  <v-text-field
+                    type="date"
+                    label="Start Day*"
                     required
-                    :value="formData.start_day"
-                    @input='$emit("inputChange", $event)'>
+                    name="start_day"
+                    :rules="startDateRules"
+                    :model-value="formData.start_day"
+                    @input='$emit("inputChange", $event)'
+                  ></v-text-field>
               </v-col>
               <v-col cols="4">
-                <label for="">End Day</label><br><br>
-                <input 
-                    type="date" 
-                    name="end_day"
+                  <v-text-field
+                    type="date"
+                    label="End Day*"
                     required
-                    :value="formData.end_day"
-                    @input='$emit("inputChange", $event)'>
+                    name="end_day"
+                    :rules="endDateRules"
+                    :model-value="formData.end_day"
+                    @input='$emit("inputChange", $event)'
+                  ></v-text-field>
               </v-col>
               <v-col cols="4">
                 <v-text-field
                   label="Proposed Days*"
                   required
                   name="proposed_completion_day"
+                  :rules="proposedCompletionDayRules"
                   :model-value="formData.proposed_completion_day"
                   @input='$emit("inputChange", $event)'
                 ></v-text-field>
@@ -79,11 +87,12 @@
                     style="min-width:5rem; margin: 10px 0px;"
                     name="status"
                     required
+                    :rules="statusRules"
                     :model-value="formData.status"
                     @update:modelValue='$emit("selectChange", "status", false, $event)'
                 ></v-select>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="4" v-if="role=='Admin'">
                     <v-select
                         :items="apiApproveStatusData"
                         label="Approval"
@@ -91,6 +100,7 @@
                         style="min-width:5rem; margin: 10px 0px;"
                         name="verify_status"
                         required
+                        :rules="verifyStatusRules"
                         :model-value="formData.verify_status"
                         @update:modelValue='$emit("selectChange", "verify_status", false, $event)'
                     ></v-select>
@@ -134,5 +144,30 @@ const { role, moduleName, userRef, dialog, formData, apiStatusData, apiApproveSt
         apiApproveStatusData: Object,
         apiUserNameData: Object,
     })
+
+const ticketIdRules = ref([
+      v => !!v || 'Field is required',
+   ])
+const linkRules = ref([
+      v => !!v || 'Field is required',
+   ])
+const developerRules = ref([
+      v => !!v || 'Field is required',
+   ])
+const startDateRules = ref([
+      v => !!v || 'Field is required',
+   ])
+const endDateRules = ref([
+      v => !!v || 'Field is required',
+   ])
+const proposedCompletionDayRules = ref([
+      v => !!v || 'Field is required',
+   ])
+const statusRules = ref([
+      v => !!v || 'Field is required',
+   ])
+const verifyStatusRules = ref([
+      v => !!v || 'Field is required',
+   ])
 
 </script>

@@ -89,7 +89,7 @@
                 </div>
             </template>
         </EasyDataTable>
-        <form @submit.prevent="submitForm" ref="formRef">
+        <v-form @submit.prevent="submitForm" ref="formRef">
                 <TikcetFormModal 
                     :dialog="dialog" 
                     :moduleName="moduleName" 
@@ -104,7 +104,7 @@
                     @openModal="openModal" 
                     @closeModal="closeModal" 
                     @submitForm="submitForm" />
-            </form>
+            </v-form>
     </div>
 </template>
 
@@ -237,13 +237,13 @@ import store from '../store/index.js'
 
     const inputChange = (event) => {
         formData.value = { ...formData.value, [event.target.name]: event.target.value }
-        console.log(formData.value)
     }
 
     const selectChange = (name, filterable = false, value) => {
         if(filterable) {
             const selected_user = apiUserData.value.find( f => f.full_name == value)
-            formData.value = { ...formData.value, [name]: selected_user.id }  
+            formData.value = { ...formData.value, [name]: selected_user.id }
+            userRef.value = value
         } else {
             formData.value = { ...formData.value, [name]: value }
         }
@@ -251,61 +251,67 @@ import store from '../store/index.js'
 
     const submitForm = async () => {
         
-        loading.value = true
-        
-        if( store.state.role === 'Admin' ) {
-            formData.value = { ...formData.value, approver_id: store.state.user.id }
-        } else {
-            formData.value = { ...formData.value, user_id: store.state.user.id, approver_id: 1 }
-        }
+        const { valid } = await formRef.value.validate()
 
-        if( formData.value?.id ) {
-            await axios({
-                method: 'PUT',
-                url: '/api/tickets/'+formData.value.id,
-                data: formData.value
-            }).then(res => {
-                let newData = apiData.value.map(item => item.id == formData.value.id ? res.data.data : item);
-                apiData.value = newData
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'success',
-                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+        if( valid ) {
+
+            loading.value = true
+            
+            if( store.state.role === 'Admin' ) {
+                formData.value = { ...formData.value, approver_id: store.state.user.id }
+            } else {
+                formData.value = { ...formData.value, user_id: store.state.user.id, approver_id: 1 }
+            }
+
+            if( formData.value?.id ) {
+                await axios({
+                    method: 'PUT',
+                    url: '/api/tickets/'+formData.value.id,
+                    data: formData.value
+                }).then(res => {
+                    let newData = apiData.value.map(item => item.id == formData.value.id ? res.data.data : item);
+                    apiData.value = newData
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'success',
+                    text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                    })
+                }).catch(err => {
+                    const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'error',
+                    text: alertMsg,
+                    })
+                    console.log(err)
                 })
-            }).catch(err => {
-                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'error',
-                   text: alertMsg,
+            } else {
+                await axios({
+                    method: 'POST',
+                    url: '/api/tickets',
+                    data: formData.value
+                }).then(res => {
+                    apiData.value = [ res.data.data, ...apiData.value ]
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'success',
+                    text: res?.data?.message ? res?.data?.message : 'Operation Successful',
+                    })
+                }).catch(err => {
+                    const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
+                    store.dispatch('UPDATE_ALERT', {
+                    value: true,
+                    type: 'error',
+                    text: alertMsg,
+                    })
+                    console.log(err)
                 })
-                console.log(err)
-            })
-        } else {
-            await axios({
-                method: 'POST',
-                url: '/api/tickets',
-                data: formData.value
-            }).then(res => {
-                apiData.value = [ res.data.data, ...apiData.value ]
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'success',
-                   text: res?.data?.message ? res?.data?.message : 'Operation Successful',
-                })
-            }).catch(err => {
-                const alertMsg = err?.response?.data?.message ? err?.response?.data?.message : 'Operation Failed'
-                store.dispatch('UPDATE_ALERT', {
-                   value: true,
-                   type: 'error',
-                   text: alertMsg,
-                })
-                console.log(err)
-            })
+            }
+            loading.value = false
+            closeModal()
+            clearForm()
+
         }
-        loading.value = false
-        closeModal()
-        clearForm()
     }
 
     const editData = (id) => {

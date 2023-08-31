@@ -59,7 +59,7 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request)
     {
-        $data = Ticket::create([
+        $storeArr = [
             'ticket_id'     => $request->ticket_id,
             'link'          => $request->link,
             'start_day'     => $request->start_day,
@@ -68,9 +68,12 @@ class TicketController extends Controller
             'status'        => $request->status,
             'user_id'       => $request->user_id,
             'approver_id'   => $request->approver_id,
-            'verify_status' => $request->verify_status,
             'slug'          => SlugService::createSlug(Ticket::class, 'slug', $request->ticket_id, ['unique' => true]),
-        ]);
+        ];
+        if($request->has('verify_status')) {
+            array_merge($storeArr, ['verify_status' => $request->verify_status]);
+        }
+        $data = Ticket::create($storeArr);
 
         $ticket = TicketResource::collection(Ticket::WHERE('id', $data->id)->get());
 
@@ -108,19 +111,22 @@ class TicketController extends Controller
      */
     public function update(UpdateTicketRequest $request, $id)
     {
-        Ticket::where('id', $id)
-                    ->update([
-                        'ticket_id'     => $request->ticket_id,
-                        'link'          => $request->link,
-                        'start_day'     => $request->start_day,
-                        'end_day'       => $request->end_day,
-                        'proposed_completion_day'=> $request->proposed_completion_day,
-                        'status'        => $request->status,
-                        'user_id'       => $request->user_id,
-                        'approver_id'   => $request->approver_id,
-                        'verify_status' => $request->verify_status,
-                        'slug'          => SlugService::createSlug(Ticket::class, 'slug', $request->ticket_id, ['unique' => true]),
-                    ]);
+        $updateArr = [
+            'ticket_id'     => $request->ticket_id,
+            'link'          => $request->link,
+            'start_day'     => $request->start_day,
+            'end_day'       => $request->end_day,
+            'proposed_completion_day'=> $request->proposed_completion_day,
+            'status'        => $request->status,
+            'user_id'       => $request->user_id,
+            'approver_id'   => $request->approver_id,
+            'slug'          => SlugService::createSlug(Ticket::class, 'slug', $request->ticket_id, ['unique' => true]),
+        ];
+        if($request->has('verify_status')) {
+            array_merge($updateArr, ['verify_status' => $request->verify_status]);
+        }
+
+        Ticket::where('id', $id)->update($updateArr);
         $ticket = TicketResource::collection(Ticket::where('id', $id)->get());
         return $this->success('202', 'Ticket Updated Successfully', $ticket[0]);
     }

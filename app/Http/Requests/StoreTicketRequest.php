@@ -32,7 +32,7 @@ class StoreTicketRequest extends FormRequest
             'status'                => ['required'],
             'user_id'               => ['required'],
             'approver_id'           => ['required'],
-            'verify_status'         => ['required'],
+            // 'verify_status'         => ['required'],
         ];
     }
 }
