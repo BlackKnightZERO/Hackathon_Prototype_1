@@ -9,10 +9,9 @@ import Ministry from '../pages/Ministry.vue'
 import RolePermission from '../pages/RolePermission.vue'
 import Ticket from '../pages/Ticket.vue'
 import Inventory from '../pages/Inventory.vue'
+import Profile from '../pages/Profile.vue'
 
 import Page403 from '../pages/Page403.vue'
-
-import MinistryFormModal from '../components/Ministry/MinistryFormModal.vue'
 
 const routes = [
     {
@@ -42,10 +41,15 @@ const routes = [
     { 
         path: '/profile',
         name: 'profile',
-        // component: About,
-        component: MinistryFormModal,
+        component: Profile,
         meta : { auth : true }
     },
+    // { 
+    //     path: '/profile/:id',
+    //     name: 'profile-id',
+    //     component: Profile,
+    //     meta : { auth : true }
+    // },
     { 
         path: '/user',
         name: 'user',

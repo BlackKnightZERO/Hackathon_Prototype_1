@@ -62,6 +62,19 @@
                 <div class="operation-wrapper">
                     <v-btn
                         class="ma-2"
+                        color="indigo-darken-3"
+                        size="x-small"
+                        v-if="canPerform.includes('DELETE')"
+                        @click="viewProfile(item.id)"
+                    >
+                        Profile
+                        <v-icon
+                        end
+                        icon="mdi-account"
+                        ></v-icon>
+                    </v-btn>
+                    <v-btn
+                        class="ma-2"
                         color="success"
                         size="x-small"
                         v-if="canPerform.includes('UPDATE')"
@@ -113,8 +126,10 @@ import { ref, onMounted, watch } from "vue"
 import modulePermission from '../helper/modulePermission.js'
 import TikcetFormModal from '../components/Ticket/TicketFormModal.vue'
 import store from '../store/index.js'
+import { useRouter } from 'vue-router'
 
     const emit = defineEmits(['openModal', 'closeModal', 'submitForm', 'inputChange', 'selectChange'])
+    const router = useRouter()
 
     const moduleName = 'Ticket'
 
@@ -140,10 +155,10 @@ import store from '../store/index.js'
         start_day: '',
         end_day: '',
         proposed_completion_day: '',
-        status: '',
+        status: 'Pending',
         user_id: '',
         approver_id: '',
-        verify_status: '',
+        verify_status: 'Not Approved',
     })
     
     const formRef = ref(null)
@@ -349,16 +364,20 @@ import store from '../store/index.js'
 
     const clearForm = () => {
         formData.value = {
-                ticket_id: '',
-                link: '',
-                start_day: '',
-                end_day: '',
-                proposed_completion_day: '',
-                status: '',
-                user_id: '',
-                approver_id: '',
-                verify_status: '',
-            }
+            ticket_id: '',
+            link: '',
+            start_day: '',
+            end_day: '',
+            proposed_completion_day: '',
+            status: 'Pending',
+            user_id: '',
+            approver_id: '',
+            verify_status: 'Not Approved',
+        }
+    }
+
+    const viewProfile = (id) => {
+        router.push('/profile/')
     }
 
     onMounted(() => {
