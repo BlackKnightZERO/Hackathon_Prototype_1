@@ -44,12 +44,12 @@ const routes = [
         component: Profile,
         meta : { auth : true }
     },
-    // { 
-    //     path: '/profile/:id',
-    //     name: 'profile-id',
-    //     component: Profile,
-    //     meta : { auth : true }
-    // },
+    { 
+        path: '/profile/:id',
+        name: 'profile-id',
+        component: Profile,
+        meta : { auth : true }
+    },
     { 
         path: '/user',
         name: 'user',

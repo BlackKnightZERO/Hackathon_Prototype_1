@@ -28,7 +28,7 @@
                 </div>
                 <div class="mr-1">
                     <v-select
-                        :items="apiStatusData"
+                        :items="['Select', ...apiStatusData]"
                         label="Status"
                         density="compact"
                         style="min-width:5rem; margin: 10px 0px;"
@@ -38,7 +38,7 @@
                 </div>
                 <div class="mr-1">
                     <v-select
-                        :items="apiApproveStatusData"
+                        :items="['Select', ...apiApproveStatusData]"
                         label="Approval"
                         density="compact"
                         style="min-width:5rem; margin: 10px 0px;"
@@ -377,7 +377,7 @@ import { useRouter } from 'vue-router'
     }
 
     const viewProfile = (id) => {
-        router.push('/profile/')
+        router.push('/profile/'+id)
     }
 
     onMounted(() => {

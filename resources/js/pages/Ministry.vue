@@ -68,7 +68,7 @@
             </template>
         </EasyDataTable>
             <v-form @submit.prevent="submitForm" ref="formRef">
-                <MinistryFormModel 
+                <MinistryFormModel
                     :dialog="dialog" 
                     :moduleName="moduleName" 
                     :formData="formData"
