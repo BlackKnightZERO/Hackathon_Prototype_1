@@ -1,17 +1,6 @@
 <template>
   <div v-if="canPerform.includes('INDEX')">
-        <h2>{{ moduleName }}
-            <span v-if="canPerform.includes('UPDATE')">
-                <v-btn type="submit"
-                    style="float:right;"
-                    :loading="loading"
-                    size="small" 
-                    color="warning"
-                    @click="openModal()">
-                    Edit
-                </v-btn>
-            </span>
-        </h2>
+        <h2>{{ moduleName }}</h2>
 
         <v-card class="mt-2">
           <v-tabs
@@ -21,16 +10,16 @@
             stacked
           >
             <v-tab value="one">
-              <v-icon>mdi-account</v-icon>
+              <v-icon>mdi-ticket</v-icon>
               Overview
             </v-tab>
             <v-tab value="two">
-              <v-icon>mdi-pencil</v-icon>
-              Edit
+              <v-icon>mdi-account</v-icon>
+              Details
             </v-tab>
             <v-tab value="three">
-              <v-icon>mdi-heart</v-icon>
-              Reset
+              <v-icon>mdi-pencil</v-icon>
+              Edit
             </v-tab>
           </v-tabs>
 
@@ -38,9 +27,7 @@
             <v-window v-model="tab">
 
               <v-window-item value="one">
-
-                one
-
+                <OverviewTab />
               </v-window-item>
 
               <v-window-item value="two">
@@ -61,6 +48,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue"
 import { useRoute } from 'vue-router'
+import OverviewTab from "../components/Profile/OverviewTab.vue"
 import modulePermission from '../helper/modulePermission.js'
 
   const route = useRoute()
