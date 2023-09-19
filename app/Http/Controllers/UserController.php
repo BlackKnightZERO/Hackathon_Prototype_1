@@ -51,7 +51,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        return UserResource::collection(User::query()->WHERE('id', $id)->get());
     }
 
     /**

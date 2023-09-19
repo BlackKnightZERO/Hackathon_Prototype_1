@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'username'      => $this->username,
             'is_admin'      => $this->is_admin == 1 ? 'Yes' : 'No',
             'slug'          => $this->slug,
+            'userDetail'    => new UserDetailResource($this->userDetail)
         ];
     }
 }
