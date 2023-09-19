@@ -67,7 +67,7 @@
         <div class="ma-1 pa-1" v-if="renderElement">
             <v-card min-width="350">
                 <v-card-title class="font-weight-bold">COOP Info</v-card-title>
-                <v-card-subtitle>Total *8* Months</v-card-subtitle>
+                <v-card-subtitle>Total {{ apiData?.coopDuration }}</v-card-subtitle>
                 <v-card-text>
                     <v-timeline density="compact" side="end">
                         <v-timeline-item

@@ -8,6 +8,7 @@ use App\Models\Ticket;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\DB;
 use App\Enums\TicketStatusEnum;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -103,6 +104,13 @@ class UserController extends Controller
                 'data' => $user,
             ]);
         }
+
+        $coopDuration = 0;
+        foreach ($user[0]->coopTerms as $term) {
+            $start = Carbon::create($term->term_start);
+            $end = Carbon::create($term->term_end);
+            $coopDuration += $start->diffInDays($end);
+        }
         
         $ticketCaseCounts = [];
         foreach (TicketStatusEnum::cases() as $case) {
@@ -110,8 +118,24 @@ class UserController extends Controller
                                     ->where('user_id', $id)->count();
         };
         $user[0]['ticketCaseCounts'] = $ticketCaseCounts;
+        $user[0]['coopDuration'] = $this->convert($coopDuration);
+        $user[0]['coopDurationInDays'] = $coopDuration;
         return response()->json([
             'data' => $user,
         ]);
+    }
+
+    private function convert($sum) {
+        $years = floor($sum / 365);
+        $months = floor(($sum - ($years * 365))/30.5);
+        $days = ($sum - ($years * 365) - ($months * 30.5));
+        $str = "";
+        if($years > 0) {
+            $str .= $years . " year";
+        }
+        if($months > 0) {
+            $str .= $months. " months";
+        }
+        return $str;
     }
 }

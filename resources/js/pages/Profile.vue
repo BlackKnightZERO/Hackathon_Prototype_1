@@ -54,25 +54,11 @@ import modulePermission from "../helper/modulePermission.js";
     const canPerform = modulePermission(moduleName);
     const loading = ref(false);
 
-    const fetchDefaultData = async () => {
+    const fetchData = async (id) => {
         loading.value = true
         await axios({
             method: 'GET',
-            url: '/api/users/'+store.state.user.id,
-            data: {}
-        }).then(res => {
-            apiData.value = res.data.data
-        }).catch(err => {
-            console.log(err)
-        })
-        loading.value = false
-    }
-
-    const fetchData = async () => {
-        loading.value = true
-        await axios({
-            method: 'GET',
-            url: '/api/show-with-coop-ticket/'+routerParam.value,
+            url: '/api/show-with-coop-ticket/'+id,
             data: {}
         }).then(res => {
             apiData.value = res.data.data[0]
@@ -85,21 +71,10 @@ import modulePermission from "../helper/modulePermission.js";
 
     onBeforeMount(() => {
         routerParam.value = route.params.id ? route.params.id : "";
-        if(store.state.role === 'Admin' && routerParam.value === "") {
-          console.log('d1')
-          fetchDefaultData()
-        } else if(store.state.role === 'Admin' && routerParam.value !== "") {
-          console.log('u')
-          fetchData()
-        } else if(store.state.role !== 'Admin' && routerParam.value === "") {
-          console.log('d2')
-          fetchDefaultData()
-        } else if(store.state.role !== 'Admin' && routerParam.value !== "") {
-          console.log('d3')
-          fetchDefaultData()
+        if(store.state.role === 'Admin' && routerParam.value !== "") {
+          fetchData(routerParam.value)
         } else {
-          console.log('d4')
-          fetchDefaultData()
+            fetchData(store.state.user.id)
         }
     });
 

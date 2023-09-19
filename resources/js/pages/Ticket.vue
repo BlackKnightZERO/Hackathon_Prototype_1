@@ -64,7 +64,7 @@
                         class="ma-2"
                         color="indigo-darken-3"
                         size="x-small"
-                        v-if="canPerform.includes('DELETE')"
+                        v-if="$store.state.role==='Admin'"
                         @click="viewProfile(item.user_id)"
                     >
                         Profile
