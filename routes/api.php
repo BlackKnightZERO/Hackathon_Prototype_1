@@ -37,6 +37,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('/permissions', PermissionController::class);
     Route::apiResource('/role-permissions', RolePermissionController::class);
     Route::apiResource('/tickets', TicketController::class);
+    Route::get('/show-with-coop-ticket/{id}', [UserController::class, 'showWithCoopTickets']);
     Route::apiResource('/users', UserController::class);
 
     Route::get('/get-approve-status', function() {

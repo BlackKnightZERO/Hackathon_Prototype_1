@@ -65,7 +65,7 @@
                         color="indigo-darken-3"
                         size="x-small"
                         v-if="canPerform.includes('DELETE')"
-                        @click="viewProfile(item.id)"
+                        @click="viewProfile(item.user_id)"
                     >
                         Profile
                         <v-icon

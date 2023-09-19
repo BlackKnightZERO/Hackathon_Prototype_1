@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Ticket;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\DB;
+use App\Enums\TicketStatusEnum;
 
 class UserController extends Controller
 {
@@ -86,5 +89,29 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function showWithCoopTickets($id) {
+        $user = User::query()
+                ->with(['role', 'userDetail', 'coopTerms.ministry'])
+                ->withCount(['coopTerms'])
+                ->WHERE('id', $id)
+                ->get();
+
+        if($user->isEmpty()){
+            return response()->json([
+                'data' => $user,
+            ]);
+        }
+        
+        $ticketCaseCounts = [];
+        foreach (TicketStatusEnum::cases() as $case) {
+            $ticketCaseCounts[$case->value] = Ticket::where('status', $case->value)
+                                    ->where('user_id', $id)->count();
+        };
+        $user[0]['ticketCaseCounts'] = $ticketCaseCounts;
+        return response()->json([
+            'data' => $user,
+        ]);
     }
 }

@@ -22,7 +22,8 @@
                 <v-window v-model="tab">
                     <v-window-item value="one">
                         <OverviewTab 
-                          :renderElement="!($store.state.role === 'Admin' && routerParam === '')" 
+                          :renderElement="!($store.state.role === 'Admin' && routerParam === '')"
+                          :apiData="apiData"
                         />
                     </v-window-item>
 
@@ -71,10 +72,11 @@ import modulePermission from "../helper/modulePermission.js";
         loading.value = true
         await axios({
             method: 'GET',
-            url: '/api/users/'+routerParam.value,
+            url: '/api/show-with-coop-ticket/'+routerParam.value,
             data: {}
         }).then(res => {
-            apiData.value = res.data.data
+            apiData.value = res.data.data[0]
+            // console.log(apiData.value)
         }).catch(err => {
             console.log(err)
         })

@@ -23,7 +23,10 @@ class UserResource extends JsonResource
             'username'      => $this->username,
             'is_admin'      => $this->is_admin == 1 ? 'Yes' : 'No',
             'slug'          => $this->slug,
-            'userDetail'    => new UserDetailResource($this->userDetail)
+            'role'          => new RoleResource($this->whenLoaded('role')),
+            'userDetail'    => new UserDetailResource($this->whenLoaded('userDetail')),
+            'coopTerms'     => new CoopTermResource($this->whenLoaded('coopTerms')),
+            'tickets'       => new TicketResource($this->whenLoaded('tickets')),
         ];
     }
 }

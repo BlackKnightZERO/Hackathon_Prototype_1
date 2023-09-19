@@ -8,37 +8,37 @@
                     rounded
                     src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
                 ></v-img>
-                <v-card-title> first_name last_name </v-card-title>
-                <v-card-subtitle>email</v-card-subtitle>
+                <v-card-title> {{ apiData?.first_name }} {{ apiData?.last_name }} </v-card-title>
+                <v-card-subtitle>{{ apiData?.email }}</v-card-subtitle>
                 <v-card-text>
                     <table width="100%">
                         <tr>
                             <td width="40%"><b>Username</b></td>
-                            <td width="60%">username</td>
+                            <td width="60%">{{ apiData?.username }}</td>
                         </tr>
                         <tr>
                             <td width="40%"><b>Role</b></td>
-                            <td width="60%">Role</td>
+                            <td width="60%">{{ apiData?.role?.title }}</td>
                         </tr>
                         <tr>
                             <td width="40%"><b>Phone</b></td>
-                            <td width="60%">phone_1</td>
+                            <td width="60%">{{ apiData?.user_detail?.phone_1 }}</td>
                         </tr>
                         <tr v-if="renderElement">
                             <td width="40%"><b>Academic Email</b></td>
-                            <td width="60%">academic_email</td>
+                            <td width="60%">{{ apiData?.user_detail?.academic_email }}</td>
                         </tr>
                         <tr v-if="renderElement">
                             <td width="40%"><b>Personal Email</b></td>
-                            <td width="60%">personal_email</td>
+                            <td width="60%">{{ apiData?.user_detail?.personal_email }}</td>
                         </tr>
                         <tr v-if="renderElement">
                             <td width="40%"><b>Institution</b></td>
-                            <td width="60%">institution</td>
+                            <td width="60%">{{ apiData?.user_detail?.institution }}</td>
                         </tr>
                         <tr v-if="renderElement">
                             <td width="40%"><b>Program</b></td>
-                            <td width="60%">program</td>
+                            <td width="60%">{{ apiData?.user_detail?.program }}</td>
                         </tr>
                     </table>
                 </v-card-text>
@@ -50,62 +50,12 @@
                 <!-- <v-card-subtitle>email</v-card-subtitle> -->
                 <v-card-text>
                     <table class="status-table" width="100%">
-                        <tr>
-                            <td width="80%">Pending</td>
+                        <tr v-for="(value, key) of apiData?.ticketCaseCounts" :key="key">
+                            <td width="80%">{{ key }}</td>
                             <td>
                                 <v-badge
-                                    color="red-darken-1"
-                                    content="6"
-                                    inline
-                                ></v-badge>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="80%">In Progress</td>
-                            <td>
-                                <v-badge
-                                    color="info"
-                                    content="6"
-                                    inline
-                                ></v-badge>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="80%">Completed</td>
-                            <td>
-                                <v-badge
-                                    color="green-darken-1"
-                                    content="6"
-                                    inline
-                                ></v-badge>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="80%">QA Passed</td>
-                            <td>
-                                <v-badge
-                                    color="green-darken-2"
-                                    content="6"
-                                    inline
-                                ></v-badge>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="80%">Production Ready</td>
-                            <td>
-                                <v-badge
-                                    color="green-darken-3"
-                                    content="6"
-                                    inline
-                                ></v-badge>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="80%">In Production</td>
-                            <td>
-                                <v-badge
-                                    color="green-darken-4"
-                                    content="6"
+                                    :color="makeBadgeColor(key)"
+                                    :content="value"
                                     inline
                                 ></v-badge>
                             </td>
@@ -121,14 +71,14 @@
                 <v-card-text>
                     <v-timeline density="compact" side="end">
                         <v-timeline-item
-                        v-for="item in items"
+                        v-for="item in apiData?.coop_terms"
                         :key="item.id"
-                        :dot-color="item.color"
+                        dot-color="orange-lighten-1"
                         size="small"
                         >
-                        <div>Position</div>
-                        <div>Ministry</div>
-                        <div>Start Date End Date</div>
+                        <div>{{ item?.position }}</div>
+                        <div>{{ item?.ministry?.title }}</div>
+                        <div>{{ new Date(item?.term_start).toLocaleDateString() }} - {{ new Date(item?.term_end).toLocaleDateString() }}</div>
                         </v-timeline-item>
                     </v-timeline>
                 </v-card-text>
@@ -138,12 +88,11 @@
 </template>
 
 <script setup>
-import { ref} from "vue";
+import { ref } from "vue";
 
-const { renderElement } = defineProps({  renderElement: Boolean })
-console.log(renderElement)
+    const { renderElement, apiData } = defineProps({  renderElement: Boolean, apiData: Object })
 
-const items = ref([
+    const items = ref([
         {
           id: 1,
           color: 'orange-lighten-1',
@@ -155,6 +104,23 @@ const items = ref([
           icon: 'mdi-alert-circle',
         },
       ]);
+
+    const makeBadgeColor = (status) => {
+        if(status === 'Pending') {
+            return 'red-darken-1'
+        } else if (status === 'In Progress') {
+            return 'info'
+        } else if (status === 'Completed') {
+            return 'green-darken-1'
+        } else if (status === 'QA Passed') {
+            return 'green-darken-2'
+        } else if (status === 'Production Ready') {
+            return 'green-darken-3'
+        } else if (status === 'In Production') {
+            return 'green-darken-4'
+        }
+    }
+
 </script>
 
 <style scoped>
