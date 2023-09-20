@@ -11,6 +11,8 @@ use \Cviebrock\EloquentSluggable\Services\SlugService;
 use App\Enums\RoleEnum;
 use App\Enums\PermissionEnum;
 use App\Enums\ModuleEnum;
+use App\Enums\CoopTermEnum;
+use App\Enums\TicketStatusEnum;
 
 use App\Models\User;
 use App\Models\UserDetail;
@@ -19,6 +21,8 @@ use App\Models\Role;
 use App\Models\Permission;
 use App\Models\Module;
 use App\Models\Inventory;
+use App\Models\CoopTerm;
+use App\Models\Ticket;
 
 class DatabaseSeeder extends Seeder
 {
@@ -57,7 +61,7 @@ class DatabaseSeeder extends Seeder
         $adminRole->permissions()->sync($adminPermissions->pluck('id'));
 
         $userRole = Role::find(2);
-        $userRole->permissions()->sync([1, 6, 7, 9]);
+        $userRole->permissions()->sync([1, 6, 7, 9, 36, 41, 42, 43, 44, 45]);
 
         User::create([
             'first_name'    => 'Iam',
@@ -110,6 +114,27 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Ministry::factory(29)->create();
+
+        CoopTerm::create([
+            'user_id'       => 2,
+            'ministry_id'   => 1,
+            'term'          => CoopTermEnum::FIRST->value,
+            'term_start'    => '2023-01-01 10:29:20',
+            'term_end'      => '2023-04-30 10:29:20',
+            'position'      => 'Junior Web Developer COOP',
+            'slug'          => 'first',
+        ]);
+
+        Ticket::create([
+            'ticket_id'             => 'JIRA-123',
+            'link'                  => 'http://www.example.com/',
+            'start_day'             => '2023-08-24 15:32:50',
+            'end_day'               => '2023-08-27 15:32:50',
+            'proposed_completion_day'=> 5,
+            'status'                => TicketStatusEnum::PENDING->value,
+            'user_id'               => 2,
+            'approver_id'           => 1,
+        ]);
         
         Inventory::create([
             'title'         => 'HP Omen Laptop',
