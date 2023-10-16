@@ -67,7 +67,7 @@
         <div class="ma-1 pa-1" v-if="renderElement">
             <v-card min-width="350">
                 <v-card-title class="font-weight-bold">COOP Info</v-card-title>
-                <v-card-subtitle>Total {{ apiData?.coopDuration }}</v-card-subtitle>
+                <v-card-subtitle>Total {{ getFormatedStringFromDays(apiData?.coopDurationInDays) }}</v-card-subtitle>
                 <v-card-text>
                     <v-timeline density="compact" side="end">
                         <v-timeline-item
@@ -78,7 +78,7 @@
                         >
                         <div>{{ item?.position }}</div>
                         <div>{{ item?.ministry?.title }}</div>
-                        <div>{{ new Date(item?.term_start).toLocaleDateString() }} - {{ new Date(item?.term_end).toLocaleDateString() }}</div>
+                        <div>{{ formatDateV1(item?.term_start) }} - {{ formatDateV1(item?.term_end).toLocaleDateString() }}</div>
                         </v-timeline-item>
                     </v-timeline>
                 </v-card-text>
@@ -89,6 +89,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { getFormatedStringFromDays, formatDateV1 } from '@/utils/index.js'
 
     const { renderElement, apiData } = defineProps({  renderElement: Boolean, apiData: Object })
 
