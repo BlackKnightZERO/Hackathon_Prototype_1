@@ -186,4 +186,16 @@ import modulePermission from "../helper/modulePermission.js";
         }
     });
 
+    watch(
+        () => route.params.id ? route.params.id : "",
+        (paramId) => {
+            console.log(`watch called`)
+            if(store.state.role === 'Admin' && paramId !== "") {
+                fetchData(paramId)
+            } else {
+                fetchData(store.state.user.id)
+            }
+        }
+    )
+
 </script>
